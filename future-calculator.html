@@ -267,17 +267,48 @@
             <p>• <strong>SL%:</strong> Phần trăm stop loss (VD: 0.5 = 0.5%)</p>
             <p>• <strong>Leverage:</strong> Đòn bẩy (VD: 40x)</p>
             <p style="margin-top: 10px; color: #dc3545;">⚠️ Lưu ý: Giá trị SL% được chia cho 100 trong công thức tính</p>
+            <p style="margin-top: 10px; color: #28a745;">💾 Dữ liệu của bạn được tự động lưu và sẽ được khôi phục khi reload trang!</p>
         </div>
     </div>
 </div>
 
 <script>
-    let tokens = [
-        { token: 'BTC', leverage: 40, risk: 10, sl: 0.50 },
-        { token: 'ETH', leverage: 30, risk: 10, sl: 0.75 },
-        { token: 'SOL', leverage: 20, risk: 10, sl: 1.00 },
-        { token: 'XRP', leverage: 10, risk: 10, sl: 0.50 }
-    ];
+    // Load data from memory storage on page load
+    let tokens = [];
+    
+    async function loadData() {
+        try {
+            const result = await window.storage.get('futures_tokens');
+            if (result && result.value) {
+                tokens = JSON.parse(result.value);
+            } else {
+                // Default data if no saved data
+                tokens = [
+                    { token: 'BTC', leverage: 40, risk: 10, sl: 0.50 },
+                    { token: 'ETH', leverage: 30, risk: 10, sl: 0.75 },
+                    { token: 'SOL', leverage: 20, risk: 10, sl: 1.00 },
+                    { token: 'XRP', leverage: 10, risk: 10, sl: 0.50 }
+                ];
+            }
+        } catch (error) {
+            // If key doesn't exist, use default data
+            tokens = [
+                { token: 'BTC', leverage: 40, risk: 10, sl: 0.50 },
+                { token: 'ETH', leverage: 30, risk: 10, sl: 0.75 },
+                { token: 'SOL', leverage: 20, risk: 10, sl: 1.00 },
+                { token: 'XRP', leverage: 10, risk: 10, sl: 0.50 }
+            ];
+        }
+        renderTable();
+    }
+
+    async function saveData() {
+        try {
+            await window.storage.set('futures_tokens', JSON.stringify(tokens));
+        } catch (error) {
+            console.error('Error saving data:', error);
+        }
+    }
 
     function calculateCost(risk, sl, leverage) {
         return risk / ((sl / 100) * leverage);
@@ -332,6 +363,7 @@
         }
 
         tokens.push({ token, leverage, risk, sl });
+        saveData();
         renderTable();
 
         document.getElementById('tokenInput').value = '';
@@ -343,6 +375,7 @@
     function updateLeverage(index, newLeverage) {
         if (newLeverage && !isNaN(newLeverage) && parseFloat(newLeverage) > 0) {
             tokens[index].leverage = parseFloat(newLeverage);
+            saveData();
             renderTable();
         }
     }
@@ -350,6 +383,7 @@
     function updateRisk(index, newRisk) {
         if (newRisk && !isNaN(newRisk) && parseFloat(newRisk) > 0) {
             tokens[index].risk = parseFloat(newRisk);
+            saveData();
             renderTable();
         }
     }
@@ -357,6 +391,7 @@
     function updateSL(index, newSL) {
         if (newSL && !isNaN(newSL) && parseFloat(newSL) > 0) {
             tokens[index].sl = parseFloat(newSL);
+            saveData();
             renderTable();
         }
     }
@@ -364,11 +399,13 @@
     function deleteToken(index) {
         if (confirm('Bạn có chắc muốn xóa token này?')) {
             tokens.splice(index, 1);
+            saveData();
             renderTable();
         }
     }
 
-    renderTable();
+    // Load data when page loads
+    loadData();
 </script>
 ```
 
