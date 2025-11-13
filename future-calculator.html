@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futures Trading Cost Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        overflow: hidden;
+    }
+
+    .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+    }
+
+    .header h1 {
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
+
+    .content {
+        padding: 30px;
+    }
+
+    .add-token-section {
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    .input-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .input-field {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .input-field label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 5px;
+    }
+
+    .input-field input {
+        padding: 10px;
+        border: 2px solid #dee2e6;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+
+    .input-field input:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-add {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        width: 100%;
+    }
+
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .table-container {
+        overflow-x: auto;
+        margin-top: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    td {
+        padding: 12px;
+        text-align: center;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    tr:hover {
+        background: #f8f9fa;
+    }
+
+    .token-name {
+        font-weight: 600;
+        color: #667eea;
+    }
+
+    .cost-cell {
+        font-weight: 700;
+        color: #28a745;
+    }
+
+    .sl-input {
+        width: 80px;
+        padding: 8px;
+        border: 2px solid #dee2e6;
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    .sl-input:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    .editable-input {
+        width: 70px;
+        padding: 8px;
+        border: 2px solid #dee2e6;
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    .editable-input:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    .btn-delete {
+        background: #dc3545;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    .btn-delete:hover {
+        background: #c82333;
+    }
+
+    .formula-note {
+        margin-top: 20px;
+        padding: 15px;
+        background: #e7f3ff;
+        border-left: 4px solid #667eea;
+        border-radius: 5px;
+    }
+
+    .formula-note h3 {
+        color: #667eea;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+
+    .formula-note p {
+        color: #495057;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Futures Trading Cost Calculator</h1>
+            <p>Tính toán chi phí giao dịch dựa trên Leverage, Risk và Stop Loss</p>
+        </div>
+
+```
+    <div class="content">
+        <div class="table-container">
+            <table id="tokenTable">
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">Token</th>
+                        <th style="width: 15%;">Leverage</th>
+                        <th style="width: 15%;">Risk</th>
+                        <th style="width: 20%;">Auto Calculated Cost</th>
+                        <th style="width: 15%;">Enter SL %</th>
+                        <th style="width: 20%;">Hành động</th>
+                    </tr>
+                    <tr>
+                        <th colspan="6" style="background: #495057;">Risk / (SL% * Leverage)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="add-token-section">
+            <h2 style="margin-bottom: 20px; color: #495057;">Thêm Token Mới</h2>
+            <div class="input-group">
+                <div class="input-field">
+                    <label>Token</label>
+                    <input type="text" id="tokenInput" placeholder="VD: BTC, ETH...">
+                </div>
+                <div class="input-field">
+                    <label>Leverage (Đòn bẩy)</label>
+                    <input type="number" id="leverageInput" placeholder="VD: 40">
+                </div>
+                <div class="input-field">
+                    <label>Risk (Rủi ro)</label>
+                    <input type="number" id="riskInput" placeholder="VD: 10">
+                </div>
+                <div class="input-field">
+                    <label>SL % (Stop Loss %)</label>
+                    <input type="number" step="0.01" id="slInput" placeholder="VD: 0.5">
+                </div>
+            </div>
+            <button class="btn btn-add" onclick="addToken()">➕ Thêm Token</button>
+        </div>
+
+        <div class="formula-note">
+            <h3>📊 Công thức tính toán:</h3>
+            <p><strong>Auto Calculated Cost = Risk / (SL% × Leverage)</strong></p>
+            <p>• <strong>Risk:</strong> Số tiền bạn sẵn sàng chấp nhận mất</p>
+            <p>• <strong>SL%:</strong> Phần trăm stop loss (VD: 0.5 = 0.5%)</p>
+            <p>• <strong>Leverage:</strong> Đòn bẩy (VD: 40x)</p>
+            <p style="margin-top: 10px; color: #dc3545;">⚠️ Lưu ý: Giá trị SL% được chia cho 100 trong công thức tính</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    let tokens = [
+        { token: 'BTC', leverage: 40, risk: 10, sl: 0.50 },
+        { token: 'ETH', leverage: 30, risk: 10, sl: 0.75 },
+        { token: 'SOL', leverage: 20, risk: 10, sl: 1.00 },
+        { token: 'XRP', leverage: 10, risk: 10, sl: 0.50 }
+    ];
+
+    function calculateCost(risk, sl, leverage) {
+        return risk / ((sl / 100) * leverage);
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        tokens.forEach((token, index) => {
+            const cost = calculateCost(token.risk, token.sl, token.leverage);
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="token-name">${token.token}</td>
+                <td>
+                    <input type="number" 
+                           class="editable-input" 
+                           value="${token.leverage}" 
+                           oninput="updateLeverage(${index}, this.value)">
+                </td>
+                <td>
+                    <input type="number" 
+                           class="editable-input" 
+                           value="${token.risk}" 
+                           oninput="updateRisk(${index}, this.value)">
+                </td>
+                <td class="cost-cell">${cost.toFixed(2)}</td>
+                <td>
+                    <input type="number" 
+                           class="sl-input" 
+                           step="0.01" 
+                           value="${token.sl}" 
+                           oninput="updateSL(${index}, this.value)">
+                </td>
+                <td>
+                    <button class="btn-delete" onclick="deleteToken(${index})">🗑️ Xóa</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function addToken() {
+        const token = document.getElementById('tokenInput').value.trim().toUpperCase();
+        const leverage = parseFloat(document.getElementById('leverageInput').value);
+        const risk = parseFloat(document.getElementById('riskInput').value);
+        const sl = parseFloat(document.getElementById('slInput').value);
+
+        if (!token || !leverage || !risk || !sl) {
+            alert('⚠️ Vui lòng điền đầy đủ thông tin!');
+            return;
+        }
+
+        tokens.push({ token, leverage, risk, sl });
+        renderTable();
+
+        document.getElementById('tokenInput').value = '';
+        document.getElementById('leverageInput').value = '';
+        document.getElementById('riskInput').value = '';
+        document.getElementById('slInput').value = '';
+    }
+
+    function updateLeverage(index, newLeverage) {
+        if (newLeverage && !isNaN(newLeverage) && parseFloat(newLeverage) > 0) {
+            tokens[index].leverage = parseFloat(newLeverage);
+            renderTable();
+        }
+    }
+
+    function updateRisk(index, newRisk) {
+        if (newRisk && !isNaN(newRisk) && parseFloat(newRisk) > 0) {
+            tokens[index].risk = parseFloat(newRisk);
+            renderTable();
+        }
+    }
+
+    function updateSL(index, newSL) {
+        if (newSL && !isNaN(newSL) && parseFloat(newSL) > 0) {
+            tokens[index].sl = parseFloat(newSL);
+            renderTable();
+        }
+    }
+
+    function deleteToken(index) {
+        if (confirm('Bạn có chắc muốn xóa token này?')) {
+            tokens.splice(index, 1);
+            renderTable();
+        }
+    }
+
+    renderTable();
+</script>
+```
+
+</body>
+</html>
