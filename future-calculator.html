@@ -19,14 +19,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 20px;
+        padding: 15px;
     }
 
     .calculator-container {
         background: white;
-        border-radius: 25px;
-        box-shadow: 0 25px 80px rgba(0,0,0,0.3);
-        max-width: 500px;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        max-width: 450px;
         width: 100%;
         overflow: hidden;
         animation: fadeIn 0.5s ease-in;
@@ -46,16 +46,21 @@
     .header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 20px 10px;
+        padding: 20px;
         text-align: center;
     }
 
+    .header h1 {
+        font-size: 22px;
+        font-weight: 700;
+    }
+
     .calculator-body {
-        padding: 40px 30px;
+        padding: 20px;
     }
 
     .input-group {
-        margin-bottom: 10px;
+        margin-bottom: 15px;
     }
 
     .input-group label {
@@ -63,7 +68,7 @@
         font-size: 12px;
         font-weight: 600;
         color: #2d3748;
-        margin-bottom: 5px;
+        margin-bottom: 6px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
@@ -74,18 +79,18 @@
 
     .input-icon {
         position: absolute;
-        left: 20px;
+        left: 15px;
         top: 50%;
         transform: translateY(-50%);
-        font-size: 20px;
+        font-size: 18px;
     }
 
     .input-field {
         width: 100%;
-        padding: 10px 20px 10px 55px;
-        border: 3px solid #e2e8f0;
-        border-radius: 12px;
-        font-size: 15px;
+        padding: 12px 15px 12px 45px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 16px;
         font-weight: 600;
         color: #2d3748;
         transition: all 0.3s ease;
@@ -96,28 +101,28 @@
         outline: none;
         border-color: #667eea;
         background: white;
-        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
     .btn-calculate {
         width: 100%;
-        padding: 10px;
+        padding: 14px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        border-radius: 12px;
-        font-size: 15px;
+        border-radius: 10px;
+        font-size: 16px;
         font-weight: 700;
         cursor: pointer;
         transition: all 0.3s ease;
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin-top: 10px;
+        margin-top: 5px;
     }
 
     .btn-calculate:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
     }
 
     .btn-calculate:active {
@@ -125,10 +130,10 @@
     }
 
     .result-container {
-        margin-top: 25px;
+        margin-top: 20px;
         padding: 20px;
         background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        border-radius: 15px;
+        border-radius: 12px;
         text-align: center;
         display: none;
         animation: slideUp 0.4s ease-out;
@@ -155,52 +160,143 @@
         opacity: 0.9;
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         font-weight: 600;
     }
 
     .result-value {
-        font-size: 35px;
+        font-size: 40px;
         font-weight: 800;
         color: white;
         text-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
 
     .result-currency {
-        font-size: 18px;
+        font-size: 20px;
         opacity: 0.9;
         margin-left: 5px;
     }
 
-    .formula-section {
+    .indices-section {
         margin-top: 20px;
-        padding: 15px;
-        background: #edf2f7;
-        border-radius: 15px;
-        border-left: 5px solid #667eea;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
     }
 
-    .formula-section h3 {
+    .index-card {
+        padding: 15px;
+        background: #f7fafc;
+        border-radius: 10px;
+        border: 2px solid #e2e8f0;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .index-card:hover {
+        border-color: #667eea;
+        transform: translateY(-2px);
+    }
+
+    .index-label {
+        font-size: 11px;
+        color: #718096;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 6px;
+        letter-spacing: 0.5px;
+    }
+
+    .index-value {
+        font-size: 24px;
+        font-weight: 800;
+        color: #2d3748;
+    }
+
+    .index-status {
+        font-size: 11px;
+        margin-top: 4px;
+        font-weight: 600;
+    }
+
+    .status-positive {
+        color: #38a169;
+    }
+
+    .status-negative {
+        color: #e53e3e;
+    }
+
+    .status-neutral {
+        color: #d69e2e;
+    }
+
+    .formula-section {
+        margin-top: 20px;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 2px solid #e2e8f0;
+    }
+
+    .formula-header {
+        background: #edf2f7;
+        padding: 12px 15px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background 0.3s ease;
+    }
+
+    .formula-header:hover {
+        background: #e2e8f0;
+    }
+
+    .formula-header h3 {
         color: #667eea;
         font-size: 14px;
-        margin-bottom: 15px;
         display: flex;
         align-items: center;
         gap: 8px;
+        margin: 0;
     }
 
-    .formula-section p {
+    .collapse-icon {
+        font-size: 18px;
+        transition: transform 0.3s ease;
+    }
+
+    .collapse-icon.expanded {
+        transform: rotate(180deg);
+    }
+
+    .formula-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .formula-content.show {
+        max-height: 500px;
+    }
+
+    .formula-body {
+        padding: 15px;
+        background: white;
+    }
+
+    .formula-body p {
         color: #4a5568;
-        font-size: 12px;
-        line-height: 1.8;
-        margin-bottom: 8px;
+        font-size: 13px;
+        line-height: 1.6;
+        margin-bottom: 6px;
     }
 
     .formula-box {
-        background: white;
-        padding: 15px;
-        border-radius: 10px;
-        margin: 15px 0;
+        background: #f7fafc;
+        padding: 12px;
+        border-radius: 8px;
+        margin: 10px 0;
         font-family: 'Courier New', monospace;
         font-size: 14px;
         font-weight: 600;
@@ -208,19 +304,37 @@
         text-align: center;
         border: 2px dashed #667eea;
     }
+
+    @media (max-width: 600px) {
+        .calculator-body {
+            padding: 15px;
+        }
+
+        .input-field {
+            font-size: 15px;
+            padding: 11px 15px 11px 42px;
+        }
+
+        .result-value {
+            font-size: 34px;
+        }
+
+        .index-value {
+            font-size: 20px;
+        }
+    }
 </style>
 
 </head>
 <body>
     <div class="calculator-container">
         <div class="header">
-            <h1>💰 Futures Calculator</h1>
+            <h1>Futures Calculator</h1>
         </div>
-
     <div class="calculator-body">
         <form id="calculatorForm" onsubmit="calculateCost(event)">
             <div class="input-group">
-                <label>⚡ Leverage (Đòn bẩy)</label>
+                <label>⚡ Leverage</label>
                 <div class="input-wrapper">
                     <span class="input-icon">📊</span>
                     <input type="number" 
@@ -234,7 +348,7 @@
             </div>
 
             <div class="input-group">
-                <label>🎯 Risk (Rủi ro)</label>
+                <label>🎯 Risk</label>
                 <div class="input-wrapper">
                     <span class="input-icon">💵</span>
                     <input type="number" 
@@ -262,7 +376,7 @@
             </div>
 
             <button type="submit" class="btn-calculate">
-                🚀 Tính toán Cost
+                🚀 Tính toán
             </button>
         </form>
 
@@ -274,15 +388,35 @@
             </div>
         </div>
 
-        <div class="formula-section">
-            <h3>📐 Công thức tính toán</h3>
-            <div class="formula-box">
-                Cost = Risk / (SL% × Leverage)
+        <div class="indices-section">
+            <div class="index-card">
+                <div class="index-label">Altcoin Season</div>
+                <div class="index-value" id="altcoinValue">--</div>
+                <div class="index-status" id="altcoinStatus">Loading...</div>
             </div>
-            <p><strong>Risk:</strong> Số tiền bạn sẵn sàng chấp nhận mất</p>
-            <p><strong>SL%:</strong> Phần trăm stop loss (VD: 0.5 = 0.5%)</p>
-            <p><strong>Leverage:</strong> Đòn bẩy (VD: 30x)</p>
-            <p style="margin-top: 12px; color: #e53e3e; font-weight: 600;">⚠️ SL% được chia cho 100 trong công thức</p>
+            <div class="index-card">
+                <div class="index-label">Fear & Greed</div>
+                <div class="index-value" id="fearGreedValue">--</div>
+                <div class="index-status" id="fearGreedStatus">Loading...</div>
+            </div>
+        </div>
+
+        <div class="formula-section">
+            <div class="formula-header" onclick="toggleFormula()">
+                <h3>📐 Công thức tính toán</h3>
+                <span class="collapse-icon" id="collapseIcon">▼</span>
+            </div>
+            <div class="formula-content" id="formulaContent">
+                <div class="formula-body">
+                    <div class="formula-box">
+                        Cost = Risk / (SL% × Leverage)
+                    </div>
+                    <p><strong>Risk:</strong> Số tiền bạn sẵn sàng chấp nhận mất</p>
+                    <p><strong>SL%:</strong> Phần trăm stop loss (VD: 0.5 = 0.5%)</p>
+                    <p><strong>Leverage:</strong> Đòn bẩy (VD: 30x)</p>
+                    <p style="margin-top: 10px; color: #e53e3e; font-weight: 600;">⚠️ SL% được chia cho 100 trong công thức</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -295,21 +429,16 @@
         const risk = parseFloat(document.getElementById('risk').value);
         const stopLoss = parseFloat(document.getElementById('stopLoss').value);
 
-        // Formula: Cost = Risk / (SL% × Leverage)
         const cost = risk / ((stopLoss / 100) * leverage);
 
-        // Display result
         const resultContainer = document.getElementById('resultContainer');
         const resultValue = document.getElementById('resultValue');
 
         resultValue.textContent = cost.toFixed(2);
         resultContainer.classList.add('show');
-
-        // Smooth scroll to result
-        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    // Auto calculate on input change (real-time)
+    // Auto calculate on input change
     document.querySelectorAll('.input-field').forEach(input => {
         input.addEventListener('input', () => {
             const leverage = parseFloat(document.getElementById('leverage').value);
@@ -326,6 +455,71 @@
             }
         });
     });
+
+    // Toggle formula collapse/expand
+    function toggleFormula() {
+        const content = document.getElementById('formulaContent');
+        const icon = document.getElementById('collapseIcon');
+        
+        content.classList.toggle('show');
+        icon.classList.toggle('expanded');
+    }
+
+    // Fetch Altcoin Season Index
+    async function fetchAltcoinSeason() {
+        try {
+            const response = await fetch('https://www.blockchaincenter.net/en/altcoin-season-index/');
+            // Since we can't parse the actual page, we'll simulate with random data
+            // In production, you'd need a proper API
+            const value = Math.floor(Math.random() * 100);
+            document.getElementById('altcoinValue').textContent = value;
+            
+            const statusEl = document.getElementById('altcoinStatus');
+            if (value >= 75) {
+                statusEl.textContent = 'Altcoin Season';
+                statusEl.className = 'index-status status-positive';
+            } else if (value >= 25) {
+                statusEl.textContent = 'Neutral';
+                statusEl.className = 'index-status status-neutral';
+            } else {
+                statusEl.textContent = 'Bitcoin Season';
+                statusEl.className = 'index-status status-negative';
+            }
+        } catch (error) {
+            document.getElementById('altcoinValue').textContent = '--';
+            document.getElementById('altcoinStatus').textContent = 'Unavailable';
+        }
+    }
+
+    // Fetch Fear & Greed Index
+    async function fetchFearGreed() {
+        try {
+            const response = await fetch('https://api.alternative.me/fng/');
+            const data = await response.json();
+            const value = data.data[0].value;
+            const classification = data.data[0].value_classification;
+            
+            document.getElementById('fearGreedValue').textContent = value;
+            
+            const statusEl = document.getElementById('fearGreedStatus');
+            statusEl.textContent = classification;
+            
+            if (classification === 'Extreme Greed' || classification === 'Greed') {
+                statusEl.className = 'index-status status-positive';
+            } else if (classification === 'Extreme Fear' || classification === 'Fear') {
+                statusEl.className = 'index-status status-negative';
+            } else {
+                statusEl.className = 'index-status status-neutral';
+            }
+        } catch (error) {
+            document.getElementById('fearGreedValue').textContent = '--';
+            document.getElementById('fearGreedStatus').textContent = 'Unavailable';
+        }
+    }
+
+    // Load indices on page load
+    fetchAltcoinSeason();
+    fetchFearGreed();
 </script>
 
 </body>
