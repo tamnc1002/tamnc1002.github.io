@@ -11,7 +11,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -54,8 +54,43 @@
         font-weight: 700;
     }
 
-    .calculator-body {
+    .tabs {
+        display: flex;
+        background: #f7fafc;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .tab {
+        flex: 1;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        color: #718096;
+        background: #f7fafc;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .tab:hover {
+        background: #edf2f7;
+    }
+
+    .tab.active {
+        color: #667eea;
+        background: white;
+        border-bottom: 3px solid #667eea;
+    }
+
+    .tab-content {
+        display: none;
         padding: 20px;
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    .tab-content.active {
+        display: block;
     }
 
     .input-group {
@@ -97,6 +132,27 @@
     }
 
     .input-field:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .textarea-field {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 14px;
+        font-family: 'Courier New', monospace;
+        color: #2d3748;
+        transition: all 0.3s ease;
+        background: #f7fafc;
+        resize: vertical;
+        line-height: 1.5;
+    }
+
+    .textarea-field:focus {
         outline: none;
         border-color: #667eea;
         background: white;
@@ -174,6 +230,20 @@
         font-size: 20px;
         opacity: 0.9;
         margin-left: 5px;
+    }
+
+    .result-details {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(255,255,255,0.3);
+        font-size: 13px;
+        color: white;
+    }
+
+    .result-details div {
+        margin: 5px 0;
+        display: flex;
+        justify-content: space-between;
     }
 
     .indices-section {
@@ -305,7 +375,12 @@
     }
 
     @media (max-width: 600px) {
-        .calculator-body {
+        .tab {
+            padding: 12px 10px;
+            font-size: 13px;
+        }
+
+        .tab-content {
             padding: 15px;
         }
 
@@ -331,14 +406,20 @@
             <h1>Futures Calculator</h1>
         </div>
 
-    <div class="calculator-body">
-        <form id="calculatorForm" onsubmit="calculateCost(event)">
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab(0)">SL by %</button>
+        <button class="tab" onclick="switchTab(1)">SL by Price</button>
+    </div>
+
+    <!-- Tab 1: SL by % -->
+    <div class="tab-content active" id="tab1">
+        <form id="calculatorForm1" onsubmit="calculateByPercent(event)">
             <div class="input-group">
                 <label>⚡ Leverage</label>
                 <div class="input-wrapper">
                     <span class="input-icon">📊</span>
                     <input type="number" 
-                           id="leverage" 
+                           id="leverage1" 
                            class="input-field" 
                            value="30" 
                            min="1" 
@@ -352,7 +433,7 @@
                 <div class="input-wrapper">
                     <span class="input-icon">💵</span>
                     <input type="number" 
-                           id="risk" 
+                           id="risk1" 
                            class="input-field" 
                            value="10" 
                            min="0.01" 
@@ -366,7 +447,7 @@
                 <div class="input-wrapper">
                     <span class="input-icon">📉</span>
                     <input type="number" 
-                           id="stopLoss" 
+                           id="stopLoss1" 
                            class="input-field" 
                            value="0.5" 
                            min="0.01" 
@@ -380,14 +461,71 @@
             </button>
         </form>
 
-        <div class="result-container" id="resultContainer">
+        <div class="result-container" id="resultContainer1">
             <div class="result-label">Chi phí giao dịch</div>
             <div class="result-value">
-                <span id="resultValue">0</span>
+                <span id="resultValue1">0</span>
                 <span class="result-currency">$</span>
             </div>
         </div>
+    </div>
 
+    <!-- Tab 2: SL by Price -->
+    <div class="tab-content" id="tab2">
+        <form id="calculatorForm2" onsubmit="calculateByPrice(event)">
+            <div class="input-group">
+                <label>⚡ Leverage</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">📊</span>
+                    <input type="number" 
+                           id="leverage2" 
+                           class="input-field" 
+                           value="10" 
+                           min="1" 
+                           step="1"
+                           required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>🎯 Risk (Chi phí SL)</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">💵</span>
+                    <input type="number" 
+                           id="risk2" 
+                           class="input-field" 
+                           value="20" 
+                           min="0.01" 
+                           step="0.01"
+                           required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>📋 Signal</label>
+                <textarea id="signal" 
+                          class="textarea-field" 
+                          rows="5"
+                          placeholder="" required></textarea>
+</div>
+
+            <button type="submit" class="btn-calculate">
+                🚀 Tính toán
+            </button>
+        </form>
+
+        <div class="result-container" id="resultContainer2">
+            <div class="result-label">Chi phí vào lệnh</div>
+            <div class="result-value">
+                <span id="resultValue2">0</span>
+                <span class="result-currency">$</span>
+            </div>
+            <div class="result-details" id="resultDetails2"></div>
+        </div>
+    </div>
+
+    <!-- Indices Section -->
+    <div style="padding: 0 20px 20px 20px;">
         <div class="indices-section">
             <div class="index-card">
                 <div class="index-label">Altcoin Season</div>
@@ -422,33 +560,103 @@
 </div>
 
 <script>
-    function calculateCost(event) {
+    function switchTab(tabIndex) {
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabs.forEach((tab, index) => {
+            if (index === tabIndex) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+        
+        tabContents.forEach((content, index) => {
+            if (index === tabIndex) {
+                content.classList.add('active');
+            } else {
+                content.classList.remove('active');
+            }
+        });
+    }
+
+    function calculateByPercent(event) {
         event.preventDefault();
 
-        const leverage = parseFloat(document.getElementById('leverage').value);
-        const risk = parseFloat(document.getElementById('risk').value);
-        const stopLoss = parseFloat(document.getElementById('stopLoss').value);
+        const leverage = parseFloat(document.getElementById('leverage1').value);
+        const risk = parseFloat(document.getElementById('risk1').value);
+        const stopLoss = parseFloat(document.getElementById('stopLoss1').value);
 
         const cost = risk / ((stopLoss / 100) * leverage);
 
-        const resultContainer = document.getElementById('resultContainer');
-        const resultValue = document.getElementById('resultValue');
+        const resultContainer = document.getElementById('resultContainer1');
+        const resultValue = document.getElementById('resultValue1');
 
         resultValue.textContent = cost.toFixed(2);
         resultContainer.classList.add('show');
     }
 
-    // Auto calculate on input change
-    document.querySelectorAll('.input-field').forEach(input => {
+    function calculateByPrice(event) {
+        event.preventDefault();
+
+        const leverage = parseFloat(document.getElementById('leverage2').value);
+        const risk = parseFloat(document.getElementById('risk2').value);
+        const signal = document.getElementById('signal').value;
+
+        // Parse signal
+        const entryMatch = signal.match(/E:\s*([\d.]+)/i);
+        const slMatch = signal.match(/SL:\s*([\d.]+)/i);
+        const directionMatch = signal.match(/(LONG|SHORT)/i);
+
+        if (!entryMatch || !slMatch) {
+            alert('⚠️ Không thể đọc Entry hoặc SL từ signal. Vui lòng kiểm tra lại format!');
+            return;
+        }
+
+        const entry = parseFloat(entryMatch[1]);
+        const sl = parseFloat(slMatch[1]);
+        const direction = directionMatch ? directionMatch[1].toUpperCase() : 'LONG';
+
+        // Calculate SL percentage
+        let slPercent;
+        if (direction === 'LONG') {
+            slPercent = ((entry - sl) / entry) * 100;
+        } else {
+            slPercent = ((sl - entry) / entry) * 100;
+        }
+
+        // Calculate cost
+        const cost = risk / ((slPercent / 100) * leverage);
+
+        // Display results
+        const resultContainer = document.getElementById('resultContainer2');
+        const resultValue = document.getElementById('resultValue2');
+        const resultDetails = document.getElementById('resultDetails2');
+
+        resultValue.textContent = cost.toFixed(2);
+        
+        resultDetails.innerHTML = `
+            <div><span>Entry:</span><span>${entry.toFixed(4)}</span></div>
+            <div><span>Stop Loss:</span><span>${sl.toFixed(4)}</span></div>
+            <div><span>SL Distance:</span><span>${slPercent.toFixed(2)}%</span></div>
+            <div><span>Direction:</span><span>${direction}</span></div>
+        `;
+        
+        resultContainer.classList.add('show');
+    }
+
+    // Auto calculate for Tab 1
+    document.querySelectorAll('#tab1 .input-field').forEach(input => {
         input.addEventListener('input', () => {
-            const leverage = parseFloat(document.getElementById('leverage').value);
-            const risk = parseFloat(document.getElementById('risk').value);
-            const stopLoss = parseFloat(document.getElementById('stopLoss').value);
+            const leverage = parseFloat(document.getElementById('leverage1').value);
+            const risk = parseFloat(document.getElementById('risk1').value);
+            const stopLoss = parseFloat(document.getElementById('stopLoss1').value);
 
             if (leverage && risk && stopLoss && leverage > 0 && risk > 0 && stopLoss > 0) {
                 const cost = risk / ((stopLoss / 100) * leverage);
-                const resultValue = document.getElementById('resultValue');
-                const resultContainer = document.getElementById('resultContainer');
+                const resultValue = document.getElementById('resultValue1');
+                const resultContainer = document.getElementById('resultContainer1');
                 
                 resultValue.textContent = cost.toFixed(2);
                 resultContainer.classList.add('show');
@@ -456,7 +664,6 @@
         });
     });
 
-    // Toggle formula collapse/expand
     function toggleFormula() {
         const content = document.getElementById('formulaContent');
         const icon = document.getElementById('collapseIcon');
@@ -468,11 +675,9 @@
     // Fetch Altcoin Season Index
     async function fetchAltcoinSeason() {
         try {
-            // Using a CORS proxy to fetch the altcoin season index
             const response = await fetch('https://api.allorigins.win/raw?url=https://www.blockchaincenter.net/en/altcoin-season-index/');
             const text = await response.text();
             
-            // Try to extract the value from the HTML
             const match = text.match(/data-alt-season-index="(\d+)"/i) || 
                          text.match(/alt-season-index[^>]*>(\d+)/i) ||
                          text.match(/index[^>]*>(\d+)/i);
@@ -481,7 +686,6 @@
             if (match && match[1]) {
                 value = parseInt(match[1]);
             } else {
-                // If we can't parse, use a reasonable default or API alternative
                 throw new Error('Could not parse value');
             }
             
@@ -500,15 +704,10 @@
             }
         } catch (error) {
             console.error('Altcoin Season fetch error:', error);
-            // Fallback: Try to estimate based on market conditions
             try {
-                // Use Bitcoin dominance as a proxy (inverted)
                 const btcDomResponse = await fetch('https://api.coingecko.com/api/v3/global');
                 const data = await btcDomResponse.json();
                 const btcDominance = data.data.market_cap_percentage.btc;
-                
-                // Invert BTC dominance to approximate altcoin season
-                // High BTC dominance = Low altcoin season score
                 const value = Math.round(100 - btcDominance);
                 
                 document.getElementById('altcoinValue').textContent = value;
