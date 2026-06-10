@@ -578,6 +578,7 @@ async function fetchAndAnalyze() {
     const res = await fetch(
       'https://api.mexc.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=200'
     );
+    console.log(res);
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const raw = await res.json();
