@@ -6,343 +6,113 @@
 <title>BTC EMA Analyzer</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Space+Grotesk:wght@300;400;600&display=swap');
-
   :root {
-    --bg: #0a0a0f;
-    --surface: #111118;
-    --border: #1e1e2e;
-    --text: #e2e2f0;
-    --muted: #565670;
-    --accent: #7c6af7;
-    --bull: #22d3a0;
-    --bear: #f7456a;
-    --ema21: #f7c948;
-    --ema89: #7c6af7;
+    --bg:#0a0a0f; --surface:#111118; --border:#1e1e2e; --text:#e2e2f0;
+    --muted:#565670; --accent:#7c6af7; --bull:#22d3a0; --bear:#f7456a;
+    --ema21:#f7c948; --ema89:#7c6af7;
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Space Grotesk', sans-serif;
-    min-height: 100vh;
-    padding: 24px;
-  }
-
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 28px;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .title-group h1 {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    color: #fff;
-  }
-
-  .title-group p {
-    font-size: 12px;
-    color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
-    margin-top: 2px;
-  }
-
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .auto-badge {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(34,211,160,0.1);
-    border: 1px solid rgba(34,211,160,0.25);
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--bull);
-  }
-
-  .pulse-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--bull);
-    animation: pulse 1.5s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.7); }
-  }
-
-  .countdown {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--muted);
-    min-width: 60px;
-  }
-
-  .btn {
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .btn:hover { opacity: 0.85; }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .btn-spin {
-    display: inline-block;
-    width: 14px; height: 14px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Space Grotesk',sans-serif; min-height:100vh; padding:24px; }
+  header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:12px; }
+  .title-group h1 { font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; letter-spacing:-0.5px; color:#fff; }
+  .title-group p { font-size:12px; color:var(--muted); font-family:'JetBrains Mono',monospace; margin-top:2px; }
+  .header-right { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .auto-badge { display:flex; align-items:center; gap:6px; background:rgba(34,211,160,0.1); border:1px solid rgba(34,211,160,0.25); border-radius:20px; padding:6px 14px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--bull); }
+  .pulse-dot { width:7px; height:7px; border-radius:50%; background:var(--bull); animation:pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+  .countdown { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted); min-width:60px; }
+  .btn { background:var(--accent); color:#fff; border:none; padding:10px 20px; border-radius:8px; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; cursor:pointer; transition:opacity .2s; display:flex; align-items:center; gap:8px; }
+  .btn:hover{opacity:.85} .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn-spin { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; }
+  @keyframes spin{to{transform:rotate(360deg)}}
 
   /* Signal banner */
-  .signal-banner {
-    border-radius: 12px;
-    padding: 20px 24px;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    border: 1px solid transparent;
-    transition: all 0.4s ease;
-  }
+  .signal-banner { border-radius:12px; padding:20px 24px; margin-bottom:24px; display:flex; align-items:center; gap:16px; border:1px solid transparent; transition:all .4s ease; }
+  .signal-banner.bull{background:rgba(34,211,160,.08);border-color:rgba(34,211,160,.25)}
+  .signal-banner.bear{background:rgba(247,69,106,.08);border-color:rgba(247,69,106,.25)}
+  .signal-banner.neutral{background:rgba(124,106,247,.08);border-color:rgba(124,106,247,.2)}
+  .signal-dot { width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+  .bull .signal-dot{background:rgba(34,211,160,.15)} .bear .signal-dot{background:rgba(247,69,106,.15)} .neutral .signal-dot{background:rgba(124,106,247,.15)}
+  .signal-info h2 { font-size:18px; font-weight:700; font-family:'JetBrains Mono',monospace; }
+  .bull .signal-info h2{color:var(--bull)} .bear .signal-info h2{color:var(--bear)} .neutral .signal-info h2{color:var(--accent)}
+  .signal-info p{font-size:13px;color:var(--muted);margin-top:3px}
 
-  .signal-banner.bull { background: rgba(34,211,160,0.08); border-color: rgba(34,211,160,0.25); }
-  .signal-banner.bear { background: rgba(247,69,106,0.08); border-color: rgba(247,69,106,0.25); }
-  .signal-banner.neutral { background: rgba(124,106,247,0.08); border-color: rgba(124,106,247,0.2); }
-
-  .signal-dot {
-    width: 48px; height: 48px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    flex-shrink: 0;
-  }
-
-  .bull .signal-dot { background: rgba(34,211,160,0.15); }
-  .bear .signal-dot { background: rgba(247,69,106,0.15); }
-  .neutral .signal-dot { background: rgba(124,106,247,0.15); }
-
-  .signal-info h2 {
-    font-size: 18px;
-    font-weight: 700;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .bull .signal-info h2 { color: var(--bull); }
-  .bear .signal-info h2 { color: var(--bear); }
-  .neutral .signal-info h2 { color: var(--accent); }
-
-  .signal-info p { font-size: 13px; color: var(--muted); margin-top: 3px; }
-
-  /* Stats grid */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-  }
-
-  .stat-card .label {
-    font-size: 11px;
-    color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
-  }
-
-  .stat-card .value {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 17px;
-    font-weight: 700;
-    color: #fff;
-  }
-
-  .stat-card .value.ema21c { color: var(--ema21); }
-  .stat-card .value.ema89c { color: var(--ema89); }
-  .stat-card .value.bull { color: var(--bull); }
-  .stat-card .value.bear { color: var(--bear); }
-
-  .stat-card .sub {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 4px;
-    font-family: 'JetBrains Mono', monospace;
-  }
+  /* Stats */
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:24px; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; }
+  .stat-card .label { font-size:11px; color:var(--muted); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
+  .stat-card .value { font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:#fff; }
+  .stat-card .value.ema21c{color:var(--ema21)} .stat-card .value.ema89c{color:var(--ema89)}
+  .stat-card .value.bull{color:var(--bull)} .stat-card .value.bear{color:var(--bear)}
+  .stat-card .sub { font-size:11px; color:var(--muted); margin-top:4px; font-family:'JetBrains Mono',monospace; }
 
   /* Chart */
-  .chart-wrap {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-
-  .chart-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .chart-title {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .legend { display: flex; gap: 16px; flex-wrap: wrap; }
-
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--muted);
-  }
-
-  .legend-dot { width: 20px; height: 2px; border-radius: 2px; }
-
-  canvas { width: 100% !important; display: block; }
+  .chart-wrap { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:20px; }
+  .chart-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:8px; }
+  .chart-title { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+  .legend{display:flex;gap:16px;flex-wrap:wrap}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--muted)}
+  .legend-dot{width:20px;height:2px;border-radius:2px}
+  canvas{width:100%!important;display:block}
 
   /* Table */
-  .table-wrap {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 20px;
+  .table-wrap { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:20px; }
+  .table-header { padding:16px 20px; border-bottom:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+  table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:12px}
+  thead th{padding:10px 16px;text-align:right;color:var(--muted);font-weight:400;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  thead th:first-child{text-align:left}
+  tbody tr{border-bottom:1px solid rgba(30,30,46,.6);transition:background .15s}
+  tbody tr:hover{background:rgba(124,106,247,.05)}
+  tbody tr:last-child{border-bottom:none}
+  tbody td{padding:9px 16px;text-align:right;color:var(--text)}
+  tbody td:first-child{text-align:left;color:var(--muted)}
+  .cross-up{background:rgba(34,211,160,.06)} .cross-down{background:rgba(247,69,106,.06)}
+  .sig-long{background:rgba(34,211,160,.12)!important} .sig-short{background:rgba(247,69,106,.12)!important}
+  .tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;letter-spacing:.5px}
+  .tag.up{background:rgba(34,211,160,.15);color:var(--bull)} .tag.down{background:rgba(247,69,106,.15);color:var(--bear)}
+  .tag.golden{background:rgba(247,201,72,.15);color:var(--ema21)}
+  .tag.long{background:rgba(34,211,160,.25);color:#fff;font-size:11px;padding:3px 9px}
+  .tag.short{background:rgba(247,69,106,.25);color:#fff;font-size:11px;padding:3px 9px}
+
+  .timestamp{text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:8px;padding-bottom:16px}
+  .error-box{background:rgba(247,69,106,.08);border:1px solid rgba(247,69,106,.25);border-radius:10px;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--bear);margin-bottom:20px}
+
+  /* Popup */
+  #alertPopup {
+    position:fixed; top:20px; right:20px; z-index:9999;
+    background:#111118; border-radius:14px; padding:20px 24px;
+    box-shadow:0 8px 40px rgba(0,0,0,.6); min-width:280px; max-width:340px;
+    display:none; animation:slideIn .3s ease;
+    border-left:4px solid #22d3a0;
   }
-
-  .table-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
-
-  thead th {
-    padding: 10px 16px;
-    text-align: right;
-    color: var(--muted);
-    font-weight: 400;
-    border-bottom: 1px solid var(--border);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  thead th:first-child { text-align: left; }
-
-  tbody tr { border-bottom: 1px solid rgba(30,30,46,0.6); transition: background 0.15s; }
-  tbody tr:hover { background: rgba(124,106,247,0.05); }
-  tbody tr:last-child { border-bottom: none; }
-
-  tbody td { padding: 9px 16px; text-align: right; color: var(--text); }
-  tbody td:first-child { text-align: left; color: var(--muted); }
-
-  .cross-up { background: rgba(34,211,160,0.06); }
-  .cross-down { background: rgba(247,69,106,0.06); }
-
-  .tag {
-    display: inline-block;
-    padding: 2px 7px;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-  }
-
-  .tag.up { background: rgba(34,211,160,0.15); color: var(--bull); }
-  .tag.down { background: rgba(247,69,106,0.15); color: var(--bear); }
-  .tag.golden { background: rgba(247,201,72,0.15); color: var(--ema21); }
-
-  .timestamp {
-    text-align: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 8px;
-    padding-bottom: 16px;
-  }
-
-  .error-box {
-    background: rgba(247,69,106,0.08);
-    border: 1px solid rgba(247,69,106,0.25);
-    border-radius: 10px;
-    padding: 16px 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--bear);
-    margin-bottom: 20px;
-  }
+  #alertPopup.short-alert { border-left-color:#f7456a; }
+  @keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+  #alertPopup .pop-title { font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; margin-bottom:6px; }
+  #alertPopup .pop-body { font-size:13px; color:var(--muted); line-height:1.6; }
+  #alertPopup .pop-close { position:absolute; top:12px; right:14px; cursor:pointer; color:var(--muted); font-size:16px; background:none; border:none; color:#fff; }
+  #alertPopup .pop-time { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); margin-top:8px; }
 </style>
 </head>
 <body>
 
+<!-- Alert Popup -->
+<div id="alertPopup">
+  <button class="pop-close" onclick="closePopup()">✕</button>
+  <div class="pop-title" id="popTitle">—</div>
+  <div class="pop-body" id="popBody">—</div>
+  <div class="pop-time" id="popTime">—</div>
+</div>
+
 <header>
   <div class="title-group">
-    <h1>BTC/USDT — EMA Analyzer</h1>
-    <p>MEXC API · 15m · EMA 21 &amp; 89 · 200 nến</p>
+    <h1>BTC/USDT — EMA Retest</h1>
+    <p>MEXC · 15m · EMA 21 &amp; 89 · 200 nến · Auto alert</p>
   </div>
   <div class="header-right">
-    <div class="auto-badge">
-      <div class="pulse-dot"></div>
-      Auto-refresh
-    </div>
+    <div class="auto-badge"><div class="pulse-dot"></div>Auto-refresh</div>
     <div class="countdown" id="countdown">next: 60s</div>
     <button class="btn" id="fetchBtn" onclick="manualRefresh()">
-      <span id="btnIcon">⟳</span>
-      <span id="btnText">Refresh</span>
+      <span id="btnIcon">⟳</span><span id="btnText">Refresh</span>
     </button>
   </div>
 </header>
@@ -351,72 +121,39 @@
 
 <div id="signalBanner" class="signal-banner neutral" style="display:none">
   <div class="signal-dot" id="signalDot">⚡</div>
-  <div class="signal-info">
-    <h2 id="signalTitle">—</h2>
-    <p id="signalDesc">—</p>
-  </div>
+  <div class="signal-info"><h2 id="signalTitle">—</h2><p id="signalDesc">—</p></div>
 </div>
 
 <div class="stats-grid" id="statsGrid" style="display:none">
-  <div class="stat-card">
-    <div class="label">Price hiện tại</div>
-    <div class="value" id="statPrice">—</div>
-    <div class="sub" id="statChange">—</div>
-  </div>
-  <div class="stat-card">
-    <div class="label">EMA 89 (chính)</div>
-    <div class="value ema89c" id="statEma89">—</div>
-    <div class="sub" id="statDiff89">—</div>
-  </div>
-  <div class="stat-card">
-    <div class="label">EMA 21</div>
-    <div class="value ema21c" id="statEma21">—</div>
-    <div class="sub" id="statDiff21">—</div>
-  </div>
-  <div class="stat-card">
-    <div class="label">EMA Spread (21-89)</div>
-    <div class="value" id="statSpread">—</div>
-    <div class="sub" id="statSpreadPct">—</div>
-  </div>
-  <div class="stat-card">
-    <div class="label">Crossover gần nhất</div>
-    <div class="value" id="statCross">—</div>
-    <div class="sub" id="statCrossTime">—</div>
-  </div>
-  <div class="stat-card">
-    <div class="label">Candles</div>
-    <div class="value" id="statCandles">—</div>
-    <div class="sub">hiển thị / warmup 500</div>
-  </div>
+  <div class="stat-card"><div class="label">Price hiện tại</div><div class="value" id="statPrice">—</div><div class="sub" id="statChange">—</div></div>
+  <div class="stat-card"><div class="label">EMA 89 (chính)</div><div class="value ema89c" id="statEma89">—</div><div class="sub" id="statDiff89">—</div></div>
+  <div class="stat-card"><div class="label">EMA 21</div><div class="value ema21c" id="statEma21">—</div><div class="sub" id="statDiff21">—</div></div>
+  <div class="stat-card"><div class="label">EMA Spread (21-89)</div><div class="value" id="statSpread">—</div><div class="sub" id="statSpreadPct">—</div></div>
+  <div class="stat-card"><div class="label">Retest Signal</div><div class="value" id="statSignal">—</div><div class="sub" id="statSignalTime">—</div></div>
+  <div class="stat-card"><div class="label">Candles</div><div class="value" id="statCandles">—</div><div class="sub">hiển thị / warmup 500</div></div>
 </div>
 
 <div class="chart-wrap" id="chartWrap" style="display:none">
   <div class="chart-header">
-    <span class="chart-title">Candlestick + EMA Lines (200 nến)</span>
+    <span class="chart-title">Candlestick + EMA 21/89 + Retest Signals</span>
     <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--ema89)"></div> EMA 89</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--ema21)"></div> EMA 21</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--ema89)"></div>EMA 89</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--ema21)"></div>EMA 21</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--bull)"></div>LONG</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--bear)"></div>SHORT</div>
     </div>
   </div>
-  <canvas id="priceChart" height="320"></canvas>
+  <canvas id="priceChart" height="340"></canvas>
 </div>
 
 <div class="table-wrap" id="tableWrap" style="display:none">
   <div class="table-header">20 Candles gần nhất</div>
   <div style="overflow-x:auto">
     <table>
-      <thead>
-        <tr>
-          <th>Thời gian</th>
-          <th>Open</th>
-          <th>High</th>
-          <th>Low</th>
-          <th>Close</th>
-          <th>EMA 89</th>
-          <th>EMA 21</th>
-          <th>Signal</th>
-        </tr>
-      </thead>
+      <thead><tr>
+        <th>Thời gian</th><th>Open</th><th>High</th><th>Low</th><th>Close</th>
+        <th>EMA 89</th><th>EMA 21</th><th>Signal</th>
+      </tr></thead>
       <tbody id="tableBody"></tbody>
     </table>
   </div>
@@ -432,353 +169,447 @@ function calcEMA(closes, period) {
   let sum = 0;
   for (let i = 0; i < period; i++) sum += closes[i];
   result[period - 1] = sum / period;
-  for (let i = period; i < closes.length; i++) {
-    result[i] = closes[i] * k + result[i - 1] * (1 - k);
-  }
+  for (let i = period; i < closes.length; i++)
+    result[i] = closes[i] * k + result[i-1] * (1-k);
   return result;
 }
 
-function fmt(n, dec = 2) {
-  if (n === null || n === undefined) return '—';
-  return Number(n).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+function fmt(n, dec=2) {
+  if (n===null||n===undefined) return '—';
+  return Number(n).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});
 }
-
 function fmtTime(ts) {
   const d = new Date(ts);
-  return d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) +
-    ' ' + d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+  return d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})
+    + ' ' + d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'});
 }
 
-// ─── Chart (all 200 candles) ───────────────────────────────────────
-function drawChart(candles, ema21, ema89) {
+// ─── Retest Signal Detection ───────────────────────────────────────
+// Nến hợp lệ Long: bull candle, body > upper_wick
+function isGoodBullCandle(c) {
+  if (c.close <= c.open) return false;
+  const body = c.close - c.open;
+  const upperWick = c.high - c.close;
+  return body > upperWick;
+}
+// Nến hợp lệ Short: bear candle, body > lower_wick
+function isGoodBearCandle(c) {
+  if (c.close >= c.open) return false;
+  const body = c.open - c.close;
+  const lowerWick = c.close - c.low; // open > close for bear
+  // recalc: lowerWick = low_of_bear is c.low, open is top
+  const lw = c.low; // absolute low
+  const lowerW = c.open - c.low - (c.open - c.close); // = c.close - c.low
+  return body > (c.close - c.low);
+}
+
+// Wick chạm EMA: low <= ema (for long touch) or high >= ema (for short touch)
+function touchedEMA(c, emaVal) {
+  if (!emaVal) return false;
+  return c.low <= emaVal && c.high >= emaVal;
+}
+
+function detectRetestSignals(candles, ema21, ema89) {
+  const signals = new Array(candles.length).fill(null);
+
+  for (let i = 2; i < candles.length; i++) {
+    const c2 = candles[i];     // nến 2 (vừa đóng)
+    const c1 = candles[i-1];   // nến 1
+    const e21 = ema21[i], e89 = ema89[i];
+    const e21p = ema21[i-1], e89p = ema89[i-1];
+    if (!e21 || !e89 || !e21p || !e89p) continue;
+
+    // ── LONG SETUP ─────────────────────────────────────────────────
+    // Điều kiện: giá đang trên EMA (ít nhất 1 trong 2)
+    // Nến 1: chạm EMA (wick), là bull candle đẹp
+    // Nến 2: bull candle đẹp, close > close nến 1, low > low nến 1
+    const priceAbove21 = c2.close > e21;
+    const priceAbove89 = c2.close > e89;
+
+    const c1TouchedEMA = touchedEMA(c1, e21p) || touchedEMA(c1, e89p);
+    const c2TouchedEMA = touchedEMA(c2, e21) || touchedEMA(c2, e89);
+
+    if (
+      (priceAbove21 || priceAbove89) &&        // trend bullish
+      (c1TouchedEMA || c2TouchedEMA) &&         // ít nhất 1 nến chạm EMA
+      isGoodBullCandle(c1) &&                   // nến 1 đẹp
+      isGoodBullCandle(c2) &&                   // nến 2 đẹp
+      c2.close > c1.close &&                    // close sau cao hơn
+      c2.low > c1.low                           // higher low
+    ) {
+      signals[i] = 'long';
+      continue;
+    }
+
+    // ── SHORT SETUP ────────────────────────────────────────────────
+    const priceBelow21 = c2.close < e21;
+    const priceBelow89 = c2.close < e89;
+
+    const c1TouchedEMAShort = touchedEMA(c1, e21p) || touchedEMA(c1, e89p);
+    const c2TouchedEMAShort = touchedEMA(c2, e21) || touchedEMA(c2, e89);
+
+    if (
+      (priceBelow21 || priceBelow89) &&
+      (c1TouchedEMAShort || c2TouchedEMAShort) &&
+      isGoodBearCandle(c1) &&
+      isGoodBearCandle(c2) &&
+      c2.close < c1.close &&                    // close sau thấp hơn
+      c2.high < c1.high                         // lower high
+    ) {
+      signals[i] = 'short';
+    }
+  }
+  return signals;
+}
+
+// ─── Sound Alert ───────────────────────────────────────────────────
+function playAlert(type) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const freqs = type === 'long' ? [440, 554, 659] : [659, 554, 440];
+    freqs.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.15);
+      gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + i * 0.15 + 0.05);
+      gain.gain.linearRampToValueAtTime(0, ctx.currentTime + i * 0.15 + 0.25);
+      osc.start(ctx.currentTime + i * 0.15);
+      osc.stop(ctx.currentTime + i * 0.15 + 0.3);
+    });
+  } catch(e) {}
+}
+
+// ─── Popup ─────────────────────────────────────────────────────────
+let popupTimer = null;
+function showPopup(type, candle, emaLabel) {
+  const popup = document.getElementById('alertPopup');
+  const isLong = type === 'long';
+  popup.className = isLong ? '' : 'short-alert';
+  document.getElementById('popTitle').innerHTML =
+    isLong ? '🟢 LONG SIGNAL — EMA Retest' : '🔴 SHORT SIGNAL — EMA Retest';
+  document.getElementById('popTitle').style.color = isLong ? '#22d3a0' : '#f7456a';
+  document.getElementById('popBody').innerHTML =
+    `<b>Entry:</b> ~$${fmt(candle.close)}<br>` +
+    `<b>EMA touched:</b> ${emaLabel}<br>` +
+    `<b>Close:</b> $${fmt(candle.close)} | <b>Low:</b> $${fmt(candle.low)}<br>` +
+    `<b>Condition:</b> 2 nến ${isLong ? 'bull' : 'bear'} đẹp + ${isLong ? 'Higher Low' : 'Lower High'} ✅`;
+  document.getElementById('popTime').textContent = '⏱ ' + fmtTime(candle.time);
+  popup.style.display = 'block';
+  clearTimeout(popupTimer);
+  popupTimer = setTimeout(closePopup, 12000);
+}
+function closePopup() {
+  document.getElementById('alertPopup').style.display = 'none';
+}
+
+// ─── Chart ─────────────────────────────────────────────────────────
+function drawChart(candles, ema21, ema89, signals) {
   const canvas = document.getElementById('priceChart');
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
   const W = canvas.parentElement.clientWidth - 40;
-  const H = 320;
-  canvas.width = W * dpr;
-  canvas.height = H * dpr;
-  canvas.style.width = W + 'px';
-  canvas.style.height = H + 'px';
+  const H = 340;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
   ctx.scale(dpr, dpr);
 
-  const n = candles.length; // all 200
-
+  const n = candles.length;
   const allVals = [
-    ...candles.map(c => c.high),
-    ...candles.map(c => c.low),
-    ...ema21.filter(v => v !== null),
-    ...ema89.filter(v => v !== null),
+    ...candles.map(c=>c.high), ...candles.map(c=>c.low),
+    ...ema21.filter(v=>v!==null), ...ema89.filter(v=>v!==null),
   ];
   const minV = Math.min(...allVals) * 0.9995;
   const maxV = Math.max(...allVals) * 1.0005;
 
-  const padL = 76, padR = 12, padT = 16, padB = 32;
-  const cW = W - padL - padR;
-  const cH = H - padT - padB;
+  const padL=76, padR=16, padT=16, padB=32;
+  const cW=W-padL-padR, cH=H-padT-padB;
+  const xOf = i => padL + (i/(n-1)) * cW;
+  const yOf = v => padT + cH - ((v-minV)/(maxV-minV)) * cH;
 
-  const xOf = i => padL + (i / (n - 1)) * cW;
-  const yOf = v => padT + cH - ((v - minV) / (maxV - minV)) * cH;
-
-  ctx.clearRect(0, 0, W, H);
+  ctx.clearRect(0,0,W,H);
 
   // grid
-  ctx.strokeStyle = '#1e1e2e';
-  ctx.lineWidth = 1;
-  for (let i = 0; i <= 5; i++) {
-    const y = padT + (cH / 5) * i;
-    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
-    const val = maxV - ((maxV - minV) / 5) * i;
-    ctx.fillStyle = '#565670';
-    ctx.font = '10px JetBrains Mono, monospace';
-    ctx.textAlign = 'right';
-    ctx.fillText(fmt(val, 0), padL - 6, y + 4);
+  ctx.lineWidth=1;
+  for (let i=0; i<=5; i++) {
+    const y = padT + (cH/5)*i;
+    ctx.strokeStyle='#1e1e2e';
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    const val = maxV - ((maxV-minV)/5)*i;
+    ctx.fillStyle='#565670'; ctx.font='10px JetBrains Mono,monospace'; ctx.textAlign='right';
+    ctx.fillText(fmt(val,0), padL-6, y+4);
   }
 
+  // highlight signal zones
+  candles.forEach((c,i) => {
+    if (!signals[i]) return;
+    const x = xOf(i);
+    const bw = cW / n;
+    ctx.fillStyle = signals[i]==='long' ? 'rgba(34,211,160,0.07)' : 'rgba(247,69,106,0.07)';
+    ctx.fillRect(x - bw, padT, bw*2.5, cH);
+  });
+
   // candles
-  const cw = Math.max(1.5, cW / n * 0.55);
-  candles.forEach((c, i) => {
+  const cw = Math.max(1.5, cW/n*0.55);
+  candles.forEach((c,i) => {
     const x = xOf(i);
     const bull = c.close >= c.open;
     ctx.strokeStyle = bull ? '#22d3a0' : '#f7456a';
-    ctx.fillStyle = bull ? 'rgba(34,211,160,0.75)' : 'rgba(247,69,106,0.75)';
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(x, yOf(c.high)); ctx.lineTo(x, yOf(c.low)); ctx.stroke();
-    const yO = yOf(c.open), yC = yOf(c.close);
-    ctx.fillRect(x - cw/2, Math.min(yO,yC), cw, Math.max(1, Math.abs(yO-yC)));
+    ctx.fillStyle   = bull ? 'rgba(34,211,160,.75)' : 'rgba(247,69,106,.75)';
+    ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x,yOf(c.high)); ctx.lineTo(x,yOf(c.low)); ctx.stroke();
+    const yO=yOf(c.open), yC=yOf(c.close);
+    ctx.fillRect(x-cw/2, Math.min(yO,yC), cw, Math.max(1,Math.abs(yO-yC)));
   });
 
-  // EMA 89 (chính — vẽ trước, dày hơn)
+  // EMA lines
   const drawLine = (data, color, width) => {
-    ctx.strokeStyle = color;
-    ctx.lineWidth = width;
-    ctx.lineJoin = 'round';
-    ctx.beginPath();
-    let started = false;
-    data.forEach((v, i) => {
-      if (v === null) return;
-      if (!started) { ctx.moveTo(xOf(i), yOf(v)); started = true; }
-      else ctx.lineTo(xOf(i), yOf(v));
+    ctx.strokeStyle=color; ctx.lineWidth=width; ctx.lineJoin='round';
+    ctx.beginPath(); let started=false;
+    data.forEach((v,i) => {
+      if (v===null) return;
+      if (!started) { ctx.moveTo(xOf(i),yOf(v)); started=true; }
+      else ctx.lineTo(xOf(i),yOf(v));
     });
     ctx.stroke();
   };
+  drawLine(ema89, '#7c6af7', 2.5);
+  drawLine(ema21, '#f7c948', 1.5);
 
-  drawLine(ema89, '#7c6af7', 2.5);  // EMA 89 — chính, dày
-  drawLine(ema21, '#f7c948', 1.5);  // EMA 21 — phụ, mảnh hơn
+  // signal arrows
+  candles.forEach((c,i) => {
+    if (!signals[i]) return;
+    const x = xOf(i);
+    const isLong = signals[i] === 'long';
+    // arrow
+    const arrowY = isLong ? yOf(c.low) + 22 : yOf(c.high) - 22;
+    ctx.font = 'bold 13px serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = isLong ? '#22d3a0' : '#f7456a';
+    ctx.fillText(isLong ? '▲' : '▼', x, arrowY);
+    // label
+    ctx.font = 'bold 9px JetBrains Mono,monospace';
+    ctx.fillText(isLong ? 'LONG' : 'SHORT', x, isLong ? arrowY+10 : arrowY-10);
+  });
 
-  // current price line (dashed)
-  const lastClose = candles[candles.length - 1].close;
+  // current price dashed line
+  const lastClose = candles[candles.length-1].close;
   const yPrice = yOf(lastClose);
-  ctx.strokeStyle = 'rgba(226,226,240,0.2)';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([4, 4]);
-  ctx.beginPath(); ctx.moveTo(padL, yPrice); ctx.lineTo(W - padR, yPrice); ctx.stroke();
+  ctx.strokeStyle='rgba(226,226,240,.2)'; ctx.lineWidth=1;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(padL,yPrice); ctx.lineTo(W-padR,yPrice); ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle = 'rgba(226,226,240,0.7)';
-  ctx.font = '10px JetBrains Mono, monospace';
-  ctx.textAlign = 'left';
-  ctx.fillText(fmt(lastClose, 0), W - padR + 2, yPrice + 4);
+  ctx.fillStyle='rgba(226,226,240,.6)'; ctx.font='10px JetBrains Mono,monospace'; ctx.textAlign='right';
+  ctx.fillText('$'+fmt(lastClose,0), W-padR, yPrice-4);
 
-  // time labels every 25 candles
-  ctx.fillStyle = '#565670';
-  ctx.font = '10px JetBrains Mono, monospace';
-  ctx.textAlign = 'center';
-  for (let i = 0; i < n; i += 25) {
+  // time labels
+  ctx.fillStyle='#565670'; ctx.font='10px JetBrains Mono,monospace'; ctx.textAlign='center';
+  for (let i=0; i<n; i+=25) {
     const d = new Date(candles[i].time);
-    const label = d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
-    ctx.fillText(label, xOf(i), H - 10);
+    ctx.fillText(
+      d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'),
+      xOf(i), H-10
+    );
   }
 }
 
 // ─── Fetch & Render ────────────────────────────────────────────────
 let isFetching = false;
+let lastSignalTime = null;
 
-async function fetchAndAnalyze(isManual = false) {
+async function fetchAndAnalyze(isManual=false) {
   if (isFetching) return;
   isFetching = true;
-
-  const btn = document.getElementById('fetchBtn');
-  const btnIcon = document.getElementById('btnIcon');
-  const btnText = document.getElementById('btnText');
-
-  if (isManual) {
-    btn.disabled = true;
-    btnIcon.className = 'btn-spin';
-    btnText.textContent = 'Loading...';
-  }
-
-  document.getElementById('errorBox').style.display = 'none';
+  const btn=document.getElementById('fetchBtn');
+  const btnIcon=document.getElementById('btnIcon');
+  const btnText=document.getElementById('btnText');
+  if (isManual) { btn.disabled=true; btnIcon.className='btn-spin'; btnText.textContent='Loading...'; }
+  document.getElementById('errorBox').style.display='none';
 
   try {
-    // Lấy 500 nến để warmup EMA đủ chính xác (giống TradingView)
     const res = await fetch(
       'https://corsproxy.io/?https://api.mexc.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=500'
     );
-
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const raw = await res.json();
 
-    const allCandles = raw.map(r => ({
-      time: +r[0], open: +r[1], high: +r[2], low: +r[3], close: +r[4], volume: +r[5],
+    const allCandles = raw.map(r=>({
+      time:+r[0],open:+r[1],high:+r[2],low:+r[3],close:+r[4],volume:+r[5]
     }));
 
-    // Bỏ candle cuối chưa đóng — tính EMA trên closed candles
-    const closedCandles = allCandles.slice(0, -1);
-    const closes = closedCandles.map(c => c.close);
+    // bỏ candle chưa đóng
+    const closedCandles = allCandles.slice(0,-1);
+    const closes = closedCandles.map(c=>c.close);
     const ema21Full = calcEMA(closes, 21);
     const ema89Full = calcEMA(closes, 89);
 
-    // Chỉ hiển thị 200 nến cuối
+    // hiển thị 200 nến cuối
     const candles = closedCandles.slice(-200);
-    const ema21 = ema21Full.slice(-200);
-    const ema89 = ema89Full.slice(-200);
+    const ema21   = ema21Full.slice(-200);
+    const ema89   = ema89Full.slice(-200);
 
-    const last = candles[candles.length - 1];
-    const prev = candles[candles.length - 2];
-    const e21Last = ema21[ema21.length - 1];
-    const e89Last = ema89[ema89.length - 1];
+    // detect signals
+    const signals = detectRetestSignals(candles, ema21, ema89);
 
-    // detect crossover
-    let crossIdx = -1, crossType = null;
-    for (let i = candles.length - 1; i >= 1; i--) {
-      const c21 = ema21[i], c89 = ema89[i], p21 = ema21[i-1], p89 = ema89[i-1];
-      if (!c21 || !c89 || !p21 || !p89) continue;
-      if (p21 <= p89 && c21 > c89) { crossIdx = i; crossType = 'golden'; break; }
-      if (p21 >= p89 && c21 < c89) { crossIdx = i; crossType = 'death'; break; }
-    }
+    const last   = candles[candles.length-1];
+    const prev   = candles[candles.length-2];
+    const e21Last = ema21[ema21.length-1];
+    const e89Last = ema89[ema89.length-1];
 
-    const isAbove = e21Last > e89Last;
-    const justCrossed = crossIdx >= candles.length - 3;
-
-    // Signal banner
-    const banner = document.getElementById('signalBanner');
-    const dot = document.getElementById('signalDot');
-    const title = document.getElementById('signalTitle');
-    const desc = document.getElementById('signalDesc');
-    banner.style.display = 'flex';
-
-    // EMA 89 là chính: giá so với EMA 89
-    const priceAbove89 = last.close > e89Last;
-    const priceAbove21 = last.close > e21Last;
-
-    if (crossType === 'golden' && justCrossed) {
-      banner.className = 'signal-banner bull';
-      dot.textContent = '🌟'; title.textContent = 'GOLDEN CROSS';
-      desc.textContent = 'EMA 21 vừa cắt lên EMA 89 — tín hiệu tăng mạnh';
-    } else if (crossType === 'death' && justCrossed) {
-      banner.className = 'signal-banner bear';
-      dot.textContent = '💀'; title.textContent = 'DEATH CROSS';
-      desc.textContent = 'EMA 21 vừa cắt xuống EMA 89 — tín hiệu giảm';
-    } else if (priceAbove89 && isAbove) {
-      banner.className = 'signal-banner bull';
-      dot.textContent = '📈'; title.textContent = 'BULLISH TREND';
-      desc.textContent = 'Giá trên EMA 89, EMA 21 trên EMA 89 — xu hướng tăng';
-    } else if (!priceAbove89 && !isAbove) {
-      banner.className = 'signal-banner bear';
-      dot.textContent = '📉'; title.textContent = 'BEARISH TREND';
-      desc.textContent = 'Giá dưới EMA 89, EMA 21 dưới EMA 89 — xu hướng giảm';
-    } else {
-      banner.className = 'signal-banner neutral';
-      dot.textContent = '⚡'; title.textContent = 'SIDEWAYS / MIXED';
-      desc.textContent = priceAbove89
-        ? 'Giá trên EMA 89 nhưng EMA 21 dưới EMA 89 — tín hiệu lẫn lộn'
-        : 'Giá dưới EMA 89 — thận trọng, chờ xác nhận';
-    }
-
-    // Stats
-    const pctChange = (last.close - prev.close) / prev.close * 100;
-    const diff21 = (last.close - e21Last) / e21Last * 100;
-    const diff89 = (last.close - e89Last) / e89Last * 100;
-    const spread = e21Last - e89Last;
-    const spreadPct = spread / e89Last * 100;
-
-    document.getElementById('statPrice').textContent = '$' + fmt(last.close, 2);
-    const chEl = document.getElementById('statChange');
-    chEl.textContent = (pctChange >= 0 ? '+' : '') + fmt(pctChange, 3) + '% vs candle trước';
-    chEl.style.color = pctChange >= 0 ? 'var(--bull)' : 'var(--bear)';
-
-    document.getElementById('statEma89').textContent = '$' + fmt(e89Last, 2);
-    document.getElementById('statDiff89').textContent = 'Giá ' + (diff89 >= 0 ? '+' : '') + fmt(diff89, 3) + '% vs EMA89';
-
-    document.getElementById('statEma21').textContent = '$' + fmt(e21Last, 2);
-    document.getElementById('statDiff21').textContent = 'Giá ' + (diff21 >= 0 ? '+' : '') + fmt(diff21, 3) + '% vs EMA21';
-
-    const spreadEl = document.getElementById('statSpread');
-    spreadEl.textContent = (spread >= 0 ? '+' : '') + '$' + fmt(Math.abs(spread), 2);
-    spreadEl.className = 'value ' + (spread >= 0 ? 'bull' : 'bear');
-    document.getElementById('statSpreadPct').textContent =
-      'EMA21 ' + (spread >= 0 ? 'trên' : 'dưới') + ' EMA89 ' + fmt(Math.abs(spreadPct), 3) + '%';
-
-    if (crossIdx >= 0) {
-      document.getElementById('statCross').textContent = crossType === 'golden' ? '🌟 Golden' : '💀 Death';
-      document.getElementById('statCrossTime').textContent = fmtTime(candles[crossIdx].time);
-    } else {
-      document.getElementById('statCross').textContent = 'Chưa có';
-      document.getElementById('statCrossTime').textContent = 'trong 200 nến';
-    }
-
-    document.getElementById('statCandles').textContent = candles.length + ' / 500';
-    document.getElementById('statsGrid').style.display = 'grid';
-
-    // Chart
-    document.getElementById('chartWrap').style.display = 'block';
-    drawChart(candles, ema21, ema89);
-
-    // Table (last 20)
-    const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = '';
-    for (let i = candles.length - 1; i >= candles.length - 20; i--) {
-      const c = candles[i];
-      const e21v = ema21[i], e89v = ema89[i];
-      const e21p = ema21[i-1], e89p = ema89[i-1];
-
-      let signal = '', rowClass = '';
-      if (e21v && e89v && e21p && e89p) {
-        if (e21p <= e89p && e21v > e89v) { signal = '<span class="tag golden">⭐ Golden Cross</span>'; rowClass = 'cross-up'; }
-        else if (e21p >= e89p && e21v < e89v) { signal = '<span class="tag down">💀 Death Cross</span>'; rowClass = 'cross-down'; }
-        else if (c.close > e89v) signal = '<span class="tag up">▲ Above EMA89</span>';
-        else signal = '<span class="tag down">▼ Below EMA89</span>';
+    // check newest signal for alert
+    const latestSigIdx = signals.map((s,i)=>({s,i})).filter(x=>x.s).pop();
+    if (latestSigIdx && candles[latestSigIdx.i].time !== lastSignalTime) {
+      const sigCandle = candles[latestSigIdx.i];
+      const sigType   = latestSigIdx.s;
+      // EMA label
+      const e21v = ema21[latestSigIdx.i], e89v = ema89[latestSigIdx.i];
+      const touched21 = touchedEMA(sigCandle, e21v);
+      const touched89 = touchedEMA(sigCandle, e89v);
+      const emaLabel = touched89 && touched21 ? 'EMA 21 & 89' : touched89 ? 'EMA 89' : 'EMA 21';
+      // only alert if signal is in last 3 candles (fresh)
+      if (latestSigIdx.i >= candles.length - 3) {
+        lastSignalTime = sigCandle.time;
+        playAlert(sigType);
+        showPopup(sigType, sigCandle, emaLabel);
       }
+    }
 
-      const bullC = c.close >= c.open;
-      tbody.innerHTML += `
+    // trend banner
+    const isAbove = e21Last > e89Last;
+    const priceAbove89 = last.close > e89Last;
+    const banner=document.getElementById('signalBanner');
+    const dot=document.getElementById('signalDot');
+    const title=document.getElementById('signalTitle');
+    const desc=document.getElementById('signalDesc');
+    banner.style.display='flex';
+
+    // latest retest signal takes priority
+    if (latestSigIdx && latestSigIdx.i >= candles.length-3) {
+      const st = latestSigIdx.s;
+      banner.className = 'signal-banner ' + (st==='long'?'bull':'bear');
+      dot.textContent = st==='long'?'🟢':'🔴';
+      title.textContent = st==='long' ? '🟢 LONG — EMA Retest Setup' : '🔴 SHORT — EMA Retest Setup';
+      desc.textContent = st==='long'
+        ? '2 nến bull đẹp sau retest EMA · Higher Low xác nhận ✅'
+        : '2 nến bear đẹp sau retest EMA · Lower High xác nhận ✅';
+    } else if (priceAbove89 && isAbove) {
+      banner.className='signal-banner bull';
+      dot.textContent='📈'; title.textContent='BULLISH TREND';
+      desc.textContent='Giá trên EMA 89, EMA 21 trên EMA 89 — chờ retest';
+    } else if (!priceAbove89 && !isAbove) {
+      banner.className='signal-banner bear';
+      dot.textContent='📉'; title.textContent='BEARISH TREND';
+      desc.textContent='Giá dưới EMA 89, EMA 21 dưới EMA 89 — chờ retest';
+    } else {
+      banner.className='signal-banner neutral';
+      dot.textContent='⚡'; title.textContent='SIDEWAYS / MIXED';
+      desc.textContent='Tín hiệu chưa rõ — chờ xác nhận';
+    }
+
+    // stats
+    const pctChange=(last.close-prev.close)/prev.close*100;
+    const diff21=(last.close-e21Last)/e21Last*100;
+    const diff89=(last.close-e89Last)/e89Last*100;
+    const spread=e21Last-e89Last;
+    const spreadPct=spread/e89Last*100;
+
+    document.getElementById('statPrice').textContent='$'+fmt(last.close,2);
+    const chEl=document.getElementById('statChange');
+    chEl.textContent=(pctChange>=0?'+':'')+fmt(pctChange,3)+'% vs candle trước';
+    chEl.style.color=pctChange>=0?'var(--bull)':'var(--bear)';
+    document.getElementById('statEma89').textContent='$'+fmt(e89Last,2);
+    document.getElementById('statDiff89').textContent='Giá '+(diff89>=0?'+':'')+fmt(diff89,3)+'% vs EMA89';
+    document.getElementById('statEma21').textContent='$'+fmt(e21Last,2);
+    document.getElementById('statDiff21').textContent='Giá '+(diff21>=0?'+':'')+fmt(diff21,3)+'% vs EMA21';
+    const spreadEl=document.getElementById('statSpread');
+    spreadEl.textContent=(spread>=0?'+':'')+'$'+fmt(Math.abs(spread),2);
+    spreadEl.className='value '+(spread>=0?'bull':'bear');
+    document.getElementById('statSpreadPct').textContent='EMA21 '+(spread>=0?'trên':'dưới')+' EMA89 '+fmt(Math.abs(spreadPct),3)+'%';
+
+    // retest signal stat
+    const totalSigs = signals.filter(s=>s).length;
+    const lastSig = latestSigIdx ? signals[latestSigIdx.i] : null;
+    document.getElementById('statSignal').textContent = lastSig
+      ? (lastSig==='long'?'🟢 LONG':'🔴 SHORT') : '— chưa có';
+    document.getElementById('statSignal').style.color = lastSig==='long'?'var(--bull)':lastSig==='short'?'var(--bear)':'var(--muted)';
+    document.getElementById('statSignalTime').textContent = latestSigIdx
+      ? fmtTime(candles[latestSigIdx.i].time)+' ('+totalSigs+' signals)' : 'trong 200 nến';
+
+    document.getElementById('statCandles').textContent=candles.length+' / 500';
+    document.getElementById('statsGrid').style.display='grid';
+
+    // chart
+    document.getElementById('chartWrap').style.display='block';
+    drawChart(candles, ema21, ema89, signals);
+    window._chartData = {candles, ema21, ema89, signals};
+
+    // table (last 20)
+    const tbody=document.getElementById('tableBody');
+    tbody.innerHTML='';
+    for (let i=candles.length-1; i>=candles.length-20; i--) {
+      const c=candles[i];
+      const e21v=ema21[i], e89v=ema89[i];
+      const sig=signals[i];
+      let sigHtml='', rowClass='';
+      if (sig==='long') { sigHtml='<span class="tag long">🟢 LONG</span>'; rowClass='sig-long'; }
+      else if (sig==='short') { sigHtml='<span class="tag short">🔴 SHORT</span>'; rowClass='sig-short'; }
+      else if (e89v && c.close>e89v) sigHtml='<span class="tag up">▲ Above 89</span>';
+      else sigHtml='<span class="tag down">▼ Below 89</span>';
+      const bullC=c.close>=c.open;
+      tbody.innerHTML+=`
         <tr class="${rowClass}">
           <td>${fmtTime(c.time)}</td>
           <td>${fmt(c.open,2)}</td>
           <td style="color:var(--bull)">${fmt(c.high,2)}</td>
           <td style="color:var(--bear)">${fmt(c.low,2)}</td>
           <td style="color:${bullC?'var(--bull)':'var(--bear)'};font-weight:600">${fmt(c.close,2)}</td>
-          <td style="color:var(--ema89)">${e89v ? fmt(e89v,2) : '—'}</td>
-          <td style="color:var(--ema21)">${e21v ? fmt(e21v,2) : '—'}</td>
-          <td>${signal}</td>
+          <td style="color:var(--ema89)">${e89v?fmt(e89v,2):'—'}</td>
+          <td style="color:var(--ema21)">${e21v?fmt(e21v,2):'—'}</td>
+          <td>${sigHtml}</td>
         </tr>`;
     }
 
-    document.getElementById('tableWrap').style.display = 'block';
-    document.getElementById('timestamp').textContent =
-      '🕐 Last updated: ' + new Date().toLocaleString('vi-VN');
+    document.getElementById('tableWrap').style.display='block';
+    document.getElementById('timestamp').textContent='🕐 Last updated: '+new Date().toLocaleString('vi-VN');
 
-  } catch (err) {
-    const box = document.getElementById('errorBox');
-    box.style.display = 'block';
-    box.textContent = '❌ Lỗi: ' + err.message;
+  } catch(err) {
+    const box=document.getElementById('errorBox');
+    box.style.display='block';
+    box.textContent='❌ Lỗi: '+err.message;
   } finally {
-    isFetching = false;
-    if (isManual) {
-      btn.disabled = false;
-      btnIcon.className = '';
-      btnIcon.textContent = '⟳';
-      btnText.textContent = 'Refresh';
-    }
+    isFetching=false;
+    if (isManual) { btn.disabled=false; btnIcon.className=''; btnIcon.textContent='⟳'; btnText.textContent='Refresh'; }
   }
 }
 
-function manualRefresh() {
-  resetCountdown();
-  fetchAndAnalyze(true);
-}
+function manualRefresh() { resetCountdown(); fetchAndAnalyze(true); }
 
-// ─── Auto-refresh every 60s ────────────────────────────────────────
-let secondsLeft = 60;
-let countdownTimer = null;
-
-function resetCountdown() {
-  secondsLeft = 60;
-}
-
+let secondsLeft=60;
+function resetCountdown() { secondsLeft=60; }
 function startCountdown() {
-  countdownTimer = setInterval(() => {
+  setInterval(()=>{
     secondsLeft--;
-    document.getElementById('countdown').textContent = 'next: ' + secondsLeft + 's';
-    if (secondsLeft <= 0) {
-      secondsLeft = 60;
-      fetchAndAnalyze(false);
-    }
+    document.getElementById('countdown').textContent='next: '+secondsLeft+'s';
+    if (secondsLeft<=0) { secondsLeft=60; fetchAndAnalyze(false); }
   }, 1000);
 }
 
-// ─── Resize redraw ─────────────────────────────────────────────────
 let resizeTimer;
-window.addEventListener('resize', () => {
+window.addEventListener('resize', ()=>{
   clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    const wrap = document.getElementById('chartWrap');
-    if (wrap.style.display !== 'none' && window._lastCandles) {
-      drawChart(window._lastCandles, window._lastEma21, window._lastEma89);
+  resizeTimer=setTimeout(()=>{
+    if (window._chartData) {
+      const {candles,ema21,ema89,signals}=window._chartData;
+      drawChart(candles,ema21,ema89,signals);
     }
   }, 200);
 });
 
-// patch drawChart to cache data for resize
-const _origDraw = drawChart;
-window.drawChart = function(candles, ema21, ema89) {
-  window._lastCandles = candles;
-  window._lastEma21 = ema21;
-  window._lastEma89 = ema89;
-  _origDraw(candles, ema21, ema89);
-};
+// expose for popup touch reference
+window.touchedEMA = touchedEMA;
 
-// ─── Init ──────────────────────────────────────────────────────────
 fetchAndAnalyze(true);
 startCountdown();
 </script>
