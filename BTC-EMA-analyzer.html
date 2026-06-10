@@ -54,6 +54,45 @@
     margin-top: 2px;
   }
 
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .auto-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(34,211,160,0.1);
+    border: 1px solid rgba(34,211,160,0.25);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--bull);
+  }
+
+  .pulse-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--bull);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  .countdown {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    min-width: 60px;
+  }
+
   .btn {
     background: var(--accent);
     color: #fff;
@@ -96,20 +135,9 @@
     transition: all 0.4s ease;
   }
 
-  .signal-banner.bull {
-    background: rgba(34, 211, 160, 0.08);
-    border-color: rgba(34, 211, 160, 0.25);
-  }
-
-  .signal-banner.bear {
-    background: rgba(247, 69, 106, 0.08);
-    border-color: rgba(247, 69, 106, 0.25);
-  }
-
-  .signal-banner.neutral {
-    background: rgba(124, 106, 247, 0.08);
-    border-color: rgba(124, 106, 247, 0.2);
-  }
+  .signal-banner.bull { background: rgba(34,211,160,0.08); border-color: rgba(34,211,160,0.25); }
+  .signal-banner.bear { background: rgba(247,69,106,0.08); border-color: rgba(247,69,106,0.25); }
+  .signal-banner.neutral { background: rgba(124,106,247,0.08); border-color: rgba(124,106,247,0.2); }
 
   .signal-dot {
     width: 48px; height: 48px;
@@ -121,9 +149,9 @@
     flex-shrink: 0;
   }
 
-  .bull .signal-dot { background: rgba(34, 211, 160, 0.15); }
-  .bear .signal-dot { background: rgba(247, 69, 106, 0.15); }
-  .neutral .signal-dot { background: rgba(124, 106, 247, 0.15); }
+  .bull .signal-dot { background: rgba(34,211,160,0.15); }
+  .bear .signal-dot { background: rgba(247,69,106,0.15); }
+  .neutral .signal-dot { background: rgba(124,106,247,0.15); }
 
   .signal-info h2 {
     font-size: 18px;
@@ -135,11 +163,7 @@
   .bear .signal-info h2 { color: var(--bear); }
   .neutral .signal-info h2 { color: var(--accent); }
 
-  .signal-info p {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: 3px;
-  }
+  .signal-info p { font-size: 13px; color: var(--muted); margin-top: 3px; }
 
   /* Stats grid */
   .stats-grid {
@@ -172,8 +196,8 @@
     color: #fff;
   }
 
-  .stat-card .value.ema21 { color: var(--ema21); }
-  .stat-card .value.ema89 { color: var(--ema89); }
+  .stat-card .value.ema21c { color: var(--ema21); }
+  .stat-card .value.ema89c { color: var(--ema89); }
   .stat-card .value.bull { color: var(--bull); }
   .stat-card .value.bear { color: var(--bear); }
 
@@ -184,14 +208,13 @@
     font-family: 'JetBrains Mono', monospace;
   }
 
-  /* Chart canvas */
+  /* Chart */
   .chart-wrap {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 20px;
-    position: relative;
   }
 
   .chart-header {
@@ -211,11 +234,7 @@
     letter-spacing: 0.5px;
   }
 
-  .legend {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; }
 
   .legend-item {
     display: flex;
@@ -226,14 +245,11 @@
     color: var(--muted);
   }
 
-  .legend-dot {
-    width: 20px; height: 2px;
-    border-radius: 2px;
-  }
+  .legend-dot { width: 20px; height: 2px; border-radius: 2px; }
 
-  canvas { width: 100% !important; }
+  canvas { width: 100% !important; display: block; }
 
-  /* Candles table */
+  /* Table */
   .table-wrap {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -252,12 +268,7 @@
     letter-spacing: 0.5px;
   }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-  }
+  table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 
   thead th {
     padding: 10px 16px;
@@ -272,24 +283,15 @@
 
   thead th:first-child { text-align: left; }
 
-  tbody tr {
-    border-bottom: 1px solid rgba(30,30,46,0.6);
-    transition: background 0.15s;
-  }
-
+  tbody tr { border-bottom: 1px solid rgba(30,30,46,0.6); transition: background 0.15s; }
   tbody tr:hover { background: rgba(124,106,247,0.05); }
   tbody tr:last-child { border-bottom: none; }
 
-  tbody td {
-    padding: 9px 16px;
-    text-align: right;
-    color: var(--text);
-  }
-
+  tbody td { padding: 9px 16px; text-align: right; color: var(--text); }
   tbody td:first-child { text-align: left; color: var(--muted); }
 
-  .cross-up { background: rgba(34,211,160,0.08); }
-  .cross-down { background: rgba(247,69,106,0.08); }
+  .cross-up { background: rgba(34,211,160,0.06); }
+  .cross-down { background: rgba(247,69,106,0.06); }
 
   .tag {
     display: inline-block;
@@ -304,26 +306,15 @@
   .tag.down { background: rgba(247,69,106,0.15); color: var(--bear); }
   .tag.golden { background: rgba(247,201,72,0.15); color: var(--ema21); }
 
-  /* Timestamp */
   .timestamp {
     text-align: center;
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     color: var(--muted);
     margin-top: 8px;
+    padding-bottom: 16px;
   }
 
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-  }
-
-  .empty-state .icon { font-size: 36px; margin-bottom: 12px; }
-
-  /* Error */
   .error-box {
     background: rgba(247,69,106,0.08);
     border: 1px solid rgba(247,69,106,0.25);
@@ -341,12 +332,19 @@
 <header>
   <div class="title-group">
     <h1>BTC/USDT — EMA Analyzer</h1>
-    <p>MEXC API · 15m · EMA 21 &amp; 89</p>
+    <p>MEXC API · 15m · EMA 21 &amp; 89 · 200 nến</p>
   </div>
-  <button class="btn" id="fetchBtn" onclick="fetchAndAnalyze()">
-    <span id="btnIcon">⟳</span>
-    <span id="btnText">Fetch Data</span>
-  </button>
+  <div class="header-right">
+    <div class="auto-badge">
+      <div class="pulse-dot"></div>
+      Auto-refresh
+    </div>
+    <div class="countdown" id="countdown">next: 60s</div>
+    <button class="btn" id="fetchBtn" onclick="manualRefresh()">
+      <span id="btnIcon">⟳</span>
+      <span id="btnText">Refresh</span>
+    </button>
+  </div>
 </header>
 
 <div id="errorBox" class="error-box" style="display:none"></div>
@@ -366,17 +364,17 @@
     <div class="sub" id="statChange">—</div>
   </div>
   <div class="stat-card">
-    <div class="label">EMA 21</div>
-    <div class="value ema21" id="statEma21">—</div>
-    <div class="sub" id="statDiff21">—</div>
-  </div>
-  <div class="stat-card">
-    <div class="label">EMA 89</div>
-    <div class="value ema89" id="statEma89">—</div>
+    <div class="label">EMA 89 (chính)</div>
+    <div class="value ema89c" id="statEma89">—</div>
     <div class="sub" id="statDiff89">—</div>
   </div>
   <div class="stat-card">
-    <div class="label">EMA Spread</div>
+    <div class="label">EMA 21</div>
+    <div class="value ema21c" id="statEma21">—</div>
+    <div class="sub" id="statDiff21">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">EMA Spread (21-89)</div>
     <div class="value" id="statSpread">—</div>
     <div class="sub" id="statSpreadPct">—</div>
   </div>
@@ -386,7 +384,7 @@
     <div class="sub" id="statCrossTime">—</div>
   </div>
   <div class="stat-card">
-    <div class="label">Candles loaded</div>
+    <div class="label">Candles</div>
     <div class="value" id="statCandles">—</div>
     <div class="sub">200 nến · 15m</div>
   </div>
@@ -394,13 +392,13 @@
 
 <div class="chart-wrap" id="chartWrap" style="display:none">
   <div class="chart-header">
-    <span class="chart-title">Price + EMA Lines (last 60 candles)</span>
+    <span class="chart-title">Candlestick + EMA Lines (200 nến)</span>
     <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--ema21)"></div> EMA 21</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--ema89)"></div> EMA 89</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--ema21)"></div> EMA 21</div>
     </div>
   </div>
-  <canvas id="priceChart" height="260"></canvas>
+  <canvas id="priceChart" height="320"></canvas>
 </div>
 
 <div class="table-wrap" id="tableWrap" style="display:none">
@@ -414,8 +412,8 @@
           <th>High</th>
           <th>Low</th>
           <th>Close</th>
-          <th>EMA 21</th>
           <th>EMA 89</th>
+          <th>EMA 21</th>
           <th>Signal</th>
         </tr>
       </thead>
@@ -424,19 +422,13 @@
   </div>
 </div>
 
-<div id="emptyState" class="empty-state">
-  <div class="icon">📊</div>
-  Nhấn <strong>Fetch Data</strong> để load nến BTC/USDT 15m từ MEXC
-</div>
-
 <div class="timestamp" id="timestamp"></div>
 
 <script>
-// ─── EMA Calculation ───────────────────────────────────────────────
+// ─── EMA ──────────────────────────────────────────────────────────
 function calcEMA(closes, period) {
   const k = 2 / (period + 1);
   const result = new Array(closes.length).fill(null);
-  // seed với SMA
   let sum = 0;
   for (let i = 0; i < period; i++) sum += closes[i];
   result[period - 1] = sum / period;
@@ -457,36 +449,31 @@ function fmtTime(ts) {
     ' ' + d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
 }
 
-// ─── Chart Drawing ─────────────────────────────────────────────────
+// ─── Chart (all 200 candles) ───────────────────────────────────────
 function drawChart(candles, ema21, ema89) {
   const canvas = document.getElementById('priceChart');
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
   const W = canvas.parentElement.clientWidth - 40;
-  const H = 260;
+  const H = 320;
   canvas.width = W * dpr;
   canvas.height = H * dpr;
   canvas.style.width = W + 'px';
   canvas.style.height = H + 'px';
   ctx.scale(dpr, dpr);
 
-  // use last 60 candles
-  const n = Math.min(60, candles.length);
-  const start = candles.length - n;
-  const slice = candles.slice(start);
-  const e21 = ema21.slice(start);
-  const e89 = ema89.slice(start);
+  const n = candles.length; // all 200
 
   const allVals = [
-    ...slice.map(c => c.high),
-    ...slice.map(c => c.low),
-    ...e21.filter(v => v !== null),
-    ...e89.filter(v => v !== null),
+    ...candles.map(c => c.high),
+    ...candles.map(c => c.low),
+    ...ema21.filter(v => v !== null),
+    ...ema89.filter(v => v !== null),
   ];
   const minV = Math.min(...allVals) * 0.9995;
   const maxV = Math.max(...allVals) * 1.0005;
 
-  const padL = 72, padR = 12, padT = 16, padB = 28;
+  const padL = 76, padR = 12, padT = 16, padB = 32;
   const cW = W - padL - padR;
   const cH = H - padT - padB;
 
@@ -495,16 +482,13 @@ function drawChart(candles, ema21, ema89) {
 
   ctx.clearRect(0, 0, W, H);
 
-  // grid lines
+  // grid
   ctx.strokeStyle = '#1e1e2e';
   ctx.lineWidth = 1;
-  for (let i = 0; i <= 4; i++) {
-    const y = padT + (cH / 4) * i;
-    ctx.beginPath();
-    ctx.moveTo(padL, y);
-    ctx.lineTo(W - padR, y);
-    ctx.stroke();
-    const val = maxV - ((maxV - minV) / 4) * i;
+  for (let i = 0; i <= 5; i++) {
+    const y = padT + (cH / 5) * i;
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+    const val = maxV - ((maxV - minV) / 5) * i;
     ctx.fillStyle = '#565670';
     ctx.font = '10px JetBrains Mono, monospace';
     ctx.textAlign = 'right';
@@ -512,31 +496,22 @@ function drawChart(candles, ema21, ema89) {
   }
 
   // candles
-  const cw = Math.max(2, cW / n * 0.6);
-  slice.forEach((c, i) => {
+  const cw = Math.max(1.5, cW / n * 0.55);
+  candles.forEach((c, i) => {
     const x = xOf(i);
     const bull = c.close >= c.open;
     ctx.strokeStyle = bull ? '#22d3a0' : '#f7456a';
-    ctx.fillStyle = bull ? 'rgba(34,211,160,0.7)' : 'rgba(247,69,106,0.7)';
+    ctx.fillStyle = bull ? 'rgba(34,211,160,0.75)' : 'rgba(247,69,106,0.75)';
     ctx.lineWidth = 1;
-
-    // wick
-    ctx.beginPath();
-    ctx.moveTo(x, yOf(c.high));
-    ctx.lineTo(x, yOf(c.low));
-    ctx.stroke();
-
-    // body
+    ctx.beginPath(); ctx.moveTo(x, yOf(c.high)); ctx.lineTo(x, yOf(c.low)); ctx.stroke();
     const yO = yOf(c.open), yC = yOf(c.close);
-    const bodyY = Math.min(yO, yC);
-    const bodyH = Math.max(1, Math.abs(yO - yC));
-    ctx.fillRect(x - cw / 2, bodyY, cw, bodyH);
+    ctx.fillRect(x - cw/2, Math.min(yO,yC), cw, Math.max(1, Math.abs(yO-yC)));
   });
 
-  // EMA lines
-  const drawLine = (data, color) => {
+  // EMA 89 (chính — vẽ trước, dày hơn)
+  const drawLine = (data, color, width) => {
     ctx.strokeStyle = color;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = width;
     ctx.lineJoin = 'round';
     ctx.beginPath();
     let started = false;
@@ -548,47 +523,62 @@ function drawChart(candles, ema21, ema89) {
     ctx.stroke();
   };
 
-  drawLine(e89, '#7c6af7');
-  drawLine(e21, '#f7c948');
+  drawLine(ema89, '#7c6af7', 2.5);  // EMA 89 — chính, dày
+  drawLine(ema21, '#f7c948', 1.5);  // EMA 21 — phụ, mảnh hơn
 
-  // time labels (every 10 candles)
+  // current price line (dashed)
+  const lastClose = candles[candles.length - 1].close;
+  const yPrice = yOf(lastClose);
+  ctx.strokeStyle = 'rgba(226,226,240,0.2)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.moveTo(padL, yPrice); ctx.lineTo(W - padR, yPrice); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(226,226,240,0.7)';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText(fmt(lastClose, 0), W - padR + 2, yPrice + 4);
+
+  // time labels every 25 candles
   ctx.fillStyle = '#565670';
   ctx.font = '10px JetBrains Mono, monospace';
   ctx.textAlign = 'center';
-  for (let i = 0; i < n; i += 10) {
-    const d = new Date(slice[i].time);
+  for (let i = 0; i < n; i += 25) {
+    const d = new Date(candles[i].time);
     const label = d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
-    ctx.fillText(label, xOf(i), H - 8);
+    ctx.fillText(label, xOf(i), H - 10);
   }
 }
 
-// ─── Main Fetch & Analyze ──────────────────────────────────────────
-async function fetchAndAnalyze() {
+// ─── Fetch & Render ────────────────────────────────────────────────
+let isFetching = false;
+
+async function fetchAndAnalyze(isManual = false) {
+  if (isFetching) return;
+  isFetching = true;
+
   const btn = document.getElementById('fetchBtn');
   const btnIcon = document.getElementById('btnIcon');
   const btnText = document.getElementById('btnText');
 
-  btn.disabled = true;
-  btnIcon.className = 'btn-spin';
-  btnText.textContent = 'Loading...';
+  if (isManual) {
+    btn.disabled = true;
+    btnIcon.className = 'btn-spin';
+    btnText.textContent = 'Loading...';
+  }
 
   document.getElementById('errorBox').style.display = 'none';
 
   try {
-    const res = await fetch('https://corsproxy.io/?https://api.mexc.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=200');
-    console.log(res);
+    const res = await fetch(
+      'https://corsproxy.io/?https://api.mexc.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=200'
+    );
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const raw = await res.json();
 
-    // MEXC format: [openTime, open, high, low, close, volume, closeTime, ...]
     const candles = raw.map(r => ({
-      time:   +r[0],
-      open:   +r[1],
-      high:   +r[2],
-      low:    +r[3],
-      close:  +r[4],
-      volume: +r[5],
+      time: +r[0], open: +r[1], high: +r[2], low: +r[3], close: +r[4], volume: +r[5],
     }));
 
     const closes = candles.map(c => c.close);
@@ -599,60 +589,55 @@ async function fetchAndAnalyze() {
     const prev = candles[candles.length - 2];
     const e21Last = ema21[ema21.length - 1];
     const e89Last = ema89[ema89.length - 1];
-    const e21Prev = ema21[ema21.length - 2];
-    const e89Prev = ema89[ema89.length - 2];
 
     // detect crossover
     let crossIdx = -1, crossType = null;
     for (let i = candles.length - 1; i >= 1; i--) {
-      const cur21 = ema21[i], cur89 = ema89[i];
-      const p21 = ema21[i-1], p89 = ema89[i-1];
-      if (cur21 === null || cur89 === null || p21 === null || p89 === null) continue;
-      if (p21 <= p89 && cur21 > cur89) { crossIdx = i; crossType = 'golden'; break; }
-      if (p21 >= p89 && cur21 < cur89) { crossIdx = i; crossType = 'death'; break; }
+      const c21 = ema21[i], c89 = ema89[i], p21 = ema21[i-1], p89 = ema89[i-1];
+      if (!c21 || !c89 || !p21 || !p89) continue;
+      if (p21 <= p89 && c21 > c89) { crossIdx = i; crossType = 'golden'; break; }
+      if (p21 >= p89 && c21 < c89) { crossIdx = i; crossType = 'death'; break; }
     }
 
-    // signal
     const isAbove = e21Last > e89Last;
-    const isBull = last.close > e21Last && isAbove;
-    const isBear = last.close < e21Last && !isAbove;
-    const justCrossed = crossIdx === candles.length - 1 || crossIdx === candles.length - 2;
+    const justCrossed = crossIdx >= candles.length - 3;
 
-    // ─── Signal Banner ─────────────────────────────────────────────
+    // Signal banner
     const banner = document.getElementById('signalBanner');
     const dot = document.getElementById('signalDot');
     const title = document.getElementById('signalTitle');
     const desc = document.getElementById('signalDesc');
     banner.style.display = 'flex';
 
+    // EMA 89 là chính: giá so với EMA 89
+    const priceAbove89 = last.close > e89Last;
+    const priceAbove21 = last.close > e21Last;
+
     if (crossType === 'golden' && justCrossed) {
       banner.className = 'signal-banner bull';
-      dot.textContent = '🌟';
-      title.textContent = 'GOLDEN CROSS';
+      dot.textContent = '🌟'; title.textContent = 'GOLDEN CROSS';
       desc.textContent = 'EMA 21 vừa cắt lên EMA 89 — tín hiệu tăng mạnh';
     } else if (crossType === 'death' && justCrossed) {
       banner.className = 'signal-banner bear';
-      dot.textContent = '💀';
-      title.textContent = 'DEATH CROSS';
+      dot.textContent = '💀'; title.textContent = 'DEATH CROSS';
       desc.textContent = 'EMA 21 vừa cắt xuống EMA 89 — tín hiệu giảm';
-    } else if (isBull) {
+    } else if (priceAbove89 && isAbove) {
       banner.className = 'signal-banner bull';
-      dot.textContent = '📈';
-      title.textContent = 'BULLISH TREND';
-      desc.textContent = 'Giá trên EMA 21, EMA 21 trên EMA 89 — xu hướng tăng';
-    } else if (isBear) {
+      dot.textContent = '📈'; title.textContent = 'BULLISH TREND';
+      desc.textContent = 'Giá trên EMA 89, EMA 21 trên EMA 89 — xu hướng tăng';
+    } else if (!priceAbove89 && !isAbove) {
       banner.className = 'signal-banner bear';
-      dot.textContent = '📉';
-      title.textContent = 'BEARISH TREND';
-      desc.textContent = 'Giá dưới EMA 21, EMA 21 dưới EMA 89 — xu hướng giảm';
+      dot.textContent = '📉'; title.textContent = 'BEARISH TREND';
+      desc.textContent = 'Giá dưới EMA 89, EMA 21 dưới EMA 89 — xu hướng giảm';
     } else {
       banner.className = 'signal-banner neutral';
-      dot.textContent = '⚡';
-      title.textContent = 'SIDEWAYS / MIXED';
-      desc.textContent = 'Tín hiệu chưa rõ ràng — chờ xác nhận';
+      dot.textContent = '⚡'; title.textContent = 'SIDEWAYS / MIXED';
+      desc.textContent = priceAbove89
+        ? 'Giá trên EMA 89 nhưng EMA 21 dưới EMA 89 — tín hiệu lẫn lộn'
+        : 'Giá dưới EMA 89 — thận trọng, chờ xác nhận';
     }
 
-    // ─── Stats ─────────────────────────────────────────────────────
+    // Stats
     const pctChange = (last.close - prev.close) / prev.close * 100;
     const diff21 = (last.close - e21Last) / e21Last * 100;
     const diff89 = (last.close - e89Last) / e89Last * 100;
@@ -660,99 +645,134 @@ async function fetchAndAnalyze() {
     const spreadPct = spread / e89Last * 100;
 
     document.getElementById('statPrice').textContent = '$' + fmt(last.close, 2);
-    document.getElementById('statChange').textContent = (pctChange >= 0 ? '+' : '') + fmt(pctChange, 3) + '% vs candle trước';
-    document.getElementById('statChange').style.color = pctChange >= 0 ? 'var(--bull)' : 'var(--bear)';
-
-    document.getElementById('statEma21').textContent = '$' + fmt(e21Last, 2);
-    document.getElementById('statDiff21').textContent = 'Giá ' + (diff21 >= 0 ? '+' : '') + fmt(diff21, 3) + '% vs EMA21';
+    const chEl = document.getElementById('statChange');
+    chEl.textContent = (pctChange >= 0 ? '+' : '') + fmt(pctChange, 3) + '% vs candle trước';
+    chEl.style.color = pctChange >= 0 ? 'var(--bull)' : 'var(--bear)';
 
     document.getElementById('statEma89').textContent = '$' + fmt(e89Last, 2);
     document.getElementById('statDiff89').textContent = 'Giá ' + (diff89 >= 0 ? '+' : '') + fmt(diff89, 3) + '% vs EMA89';
 
+    document.getElementById('statEma21').textContent = '$' + fmt(e21Last, 2);
+    document.getElementById('statDiff21').textContent = 'Giá ' + (diff21 >= 0 ? '+' : '') + fmt(diff21, 3) + '% vs EMA21';
+
     const spreadEl = document.getElementById('statSpread');
-    spreadEl.textContent = '$' + fmt(Math.abs(spread), 2);
+    spreadEl.textContent = (spread >= 0 ? '+' : '') + '$' + fmt(Math.abs(spread), 2);
     spreadEl.className = 'value ' + (spread >= 0 ? 'bull' : 'bear');
-    document.getElementById('statSpreadPct').textContent = 'EMA21 ' + (spread >= 0 ? 'trên' : 'dưới') + ' EMA89 ' + fmt(Math.abs(spreadPct), 3) + '%';
+    document.getElementById('statSpreadPct').textContent =
+      'EMA21 ' + (spread >= 0 ? 'trên' : 'dưới') + ' EMA89 ' + fmt(Math.abs(spreadPct), 3) + '%';
 
     if (crossIdx >= 0) {
       document.getElementById('statCross').textContent = crossType === 'golden' ? '🌟 Golden' : '💀 Death';
       document.getElementById('statCrossTime').textContent = fmtTime(candles[crossIdx].time);
     } else {
       document.getElementById('statCross').textContent = 'Chưa có';
+      document.getElementById('statCrossTime').textContent = 'trong 200 nến';
     }
 
     document.getElementById('statCandles').textContent = candles.length;
-
     document.getElementById('statsGrid').style.display = 'grid';
 
-    // ─── Chart ─────────────────────────────────────────────────────
+    // Chart
     document.getElementById('chartWrap').style.display = 'block';
-    setTimeout(() => drawChart(candles, ema21, ema89), 50);
+    drawChart(candles, ema21, ema89);
 
-    // ─── Table (last 20) ───────────────────────────────────────────
+    // Table (last 20)
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '';
-    const last20start = candles.length - 20;
-
-    for (let i = candles.length - 1; i >= last20start; i--) {
+    for (let i = candles.length - 1; i >= candles.length - 20; i--) {
       const c = candles[i];
-      const e21 = ema21[i], e89 = ema89[i];
+      const e21v = ema21[i], e89v = ema89[i];
       const e21p = ema21[i-1], e89p = ema89[i-1];
 
       let signal = '', rowClass = '';
-      if (e21 !== null && e89 !== null && e21p !== null && e89p !== null) {
-        if (e21p <= e89p && e21 > e89) {
-          signal = '<span class="tag golden">⭐ Golden Cross</span>';
-          rowClass = 'cross-up';
-        } else if (e21p >= e89p && e21 < e89) {
-          signal = '<span class="tag down">💀 Death Cross</span>';
-          rowClass = 'cross-down';
-        } else if (c.close > e21) {
-          signal = '<span class="tag up">▲ Above EMA21</span>';
-        } else {
-          signal = '<span class="tag down">▼ Below EMA21</span>';
-        }
+      if (e21v && e89v && e21p && e89p) {
+        if (e21p <= e89p && e21v > e89v) { signal = '<span class="tag golden">⭐ Golden Cross</span>'; rowClass = 'cross-up'; }
+        else if (e21p >= e89p && e21v < e89v) { signal = '<span class="tag down">💀 Death Cross</span>'; rowClass = 'cross-down'; }
+        else if (c.close > e89v) signal = '<span class="tag up">▲ Above EMA89</span>';
+        else signal = '<span class="tag down">▼ Below EMA89</span>';
       }
 
-      const bullCandle = c.close >= c.open;
-      const closeColor = bullCandle ? 'var(--bull)' : 'var(--bear)';
-
+      const bullC = c.close >= c.open;
       tbody.innerHTML += `
         <tr class="${rowClass}">
           <td>${fmtTime(c.time)}</td>
-          <td>${fmt(c.open, 2)}</td>
-          <td style="color:var(--bull)">${fmt(c.high, 2)}</td>
-          <td style="color:var(--bear)">${fmt(c.low, 2)}</td>
-          <td style="color:${closeColor};font-weight:600">${fmt(c.close, 2)}</td>
-          <td style="color:var(--ema21)">${e21 !== null ? fmt(e21, 2) : '—'}</td>
-          <td style="color:var(--ema89)">${e89 !== null ? fmt(e89, 2) : '—'}</td>
+          <td>${fmt(c.open,2)}</td>
+          <td style="color:var(--bull)">${fmt(c.high,2)}</td>
+          <td style="color:var(--bear)">${fmt(c.low,2)}</td>
+          <td style="color:${bullC?'var(--bull)':'var(--bear)'};font-weight:600">${fmt(c.close,2)}</td>
+          <td style="color:var(--ema89)">${e89v ? fmt(e89v,2) : '—'}</td>
+          <td style="color:var(--ema21)">${e21v ? fmt(e21v,2) : '—'}</td>
           <td>${signal}</td>
         </tr>`;
     }
 
     document.getElementById('tableWrap').style.display = 'block';
-    document.getElementById('emptyState').style.display = 'none';
     document.getElementById('timestamp').textContent =
-      'Last updated: ' + new Date().toLocaleString('vi-VN');
+      '🕐 Last updated: ' + new Date().toLocaleString('vi-VN');
 
   } catch (err) {
     const box = document.getElementById('errorBox');
     box.style.display = 'block';
-    box.textContent = '❌ Lỗi: ' + err.message + ' — Kiểm tra kết nối hoặc CORS (chạy trên localhost/server)';
+    box.textContent = '❌ Lỗi: ' + err.message;
   } finally {
-    btn.disabled = false;
-    btnIcon.className = '';
-    btnIcon.textContent = '⟳';
-    btnText.textContent = 'Refresh';
+    isFetching = false;
+    if (isManual) {
+      btn.disabled = false;
+      btnIcon.className = '';
+      btnIcon.textContent = '⟳';
+      btnText.textContent = 'Refresh';
+    }
   }
 }
 
+function manualRefresh() {
+  resetCountdown();
+  fetchAndAnalyze(true);
+}
+
+// ─── Auto-refresh every 60s ────────────────────────────────────────
+let secondsLeft = 60;
+let countdownTimer = null;
+
+function resetCountdown() {
+  secondsLeft = 60;
+}
+
+function startCountdown() {
+  countdownTimer = setInterval(() => {
+    secondsLeft--;
+    document.getElementById('countdown').textContent = 'next: ' + secondsLeft + 's';
+    if (secondsLeft <= 0) {
+      secondsLeft = 60;
+      fetchAndAnalyze(false);
+    }
+  }, 1000);
+}
+
+// ─── Resize redraw ─────────────────────────────────────────────────
+let resizeTimer;
 window.addEventListener('resize', () => {
-  const wrap = document.getElementById('chartWrap');
-  if (wrap.style.display !== 'none') {
-    // re-draw handled externally if needed
-  }
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    const wrap = document.getElementById('chartWrap');
+    if (wrap.style.display !== 'none' && window._lastCandles) {
+      drawChart(window._lastCandles, window._lastEma21, window._lastEma89);
+    }
+  }, 200);
 });
+
+// patch drawChart to cache data for resize
+const _origDraw = drawChart;
+window.drawChart = function(candles, ema21, ema89) {
+  window._lastCandles = candles;
+  window._lastEma21 = ema21;
+  window._lastEma89 = ema89;
+  _origDraw(candles, ema21, ema89);
+};
+
+// ─── Init ──────────────────────────────────────────────────────────
+fetchAndAnalyze(true);
+startCountdown();
 </script>
 </body>
 </html>
