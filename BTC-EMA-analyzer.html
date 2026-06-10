@@ -223,38 +223,39 @@ function detectRetestSignals(candles, ema21, ema89) {
     // Điều kiện: giá đang trên EMA (ít nhất 1 trong 2)
     // Nến 1: chạm EMA (wick), là bull candle đẹp
     // Nến 2: bull candle đẹp, close > close nến 1, low > low nến 1
-    const priceAbove21 = c2.close > e21;
-    const priceAbove89 = c2.close > e89;
+    // ── LONG SETUP ─────────────────────────────────────────────────
+    // Giá phải trên CẢ HAI EMA (xu hướng tăng rõ ràng)
+    const priceAboveBoth = c2.close > e21 && c2.close > e89;
 
     const c1TouchedEMA = touchedEMA(c1, e21p) || touchedEMA(c1, e89p);
     const c2TouchedEMA = touchedEMA(c2, e21) || touchedEMA(c2, e89);
 
     if (
-      (priceAbove21 || priceAbove89) &&        // trend bullish
-      (c1TouchedEMA || c2TouchedEMA) &&         // ít nhất 1 nến chạm EMA
-      isGoodBullCandle(c1) &&                   // nến 1 đẹp
-      isGoodBullCandle(c2) &&                   // nến 2 đẹp
-      c2.close > c1.close &&                    // close sau cao hơn
-      c2.low > c1.low                           // higher low
+      priceAboveBoth &&                          // giá trên cả EMA 21 và 89
+      (c1TouchedEMA || c2TouchedEMA) &&          // ít nhất 1 nến chạm EMA
+      isGoodBullCandle(c1) &&                    // nến 1 đẹp
+      isGoodBullCandle(c2) &&                    // nến 2 đẹp
+      c2.close > c1.close &&                     // close sau cao hơn
+      c2.low > c1.low                            // higher low
     ) {
       signals[i] = 'long';
       continue;
     }
 
     // ── SHORT SETUP ────────────────────────────────────────────────
-    const priceBelow21 = c2.close < e21;
-    const priceBelow89 = c2.close < e89;
+    // Giá phải dưới CẢ HAI EMA (xu hướng giảm rõ ràng)
+    const priceBelowBoth = c2.close < e21 && c2.close < e89;
 
     const c1TouchedEMAShort = touchedEMA(c1, e21p) || touchedEMA(c1, e89p);
     const c2TouchedEMAShort = touchedEMA(c2, e21) || touchedEMA(c2, e89);
 
     if (
-      (priceBelow21 || priceBelow89) &&
+      priceBelowBoth &&                          // giá dưới cả EMA 21 và 89
       (c1TouchedEMAShort || c2TouchedEMAShort) &&
       isGoodBearCandle(c1) &&
       isGoodBearCandle(c2) &&
-      c2.close < c1.close &&                    // close sau thấp hơn
-      c2.high < c1.high                         // lower high
+      c2.close < c1.close &&                     // close sau thấp hơn
+      c2.high < c1.high                          // lower high
     ) {
       signals[i] = 'short';
     }
