@@ -386,7 +386,7 @@
   <div class="stat-card">
     <div class="label">Candles</div>
     <div class="value" id="statCandles">—</div>
-    <div class="sub">200 nến · 15m</div>
+    <div class="sub">hiển thị / warmup 500</div>
   </div>
 </div>
 
@@ -570,20 +570,28 @@ async function fetchAndAnalyze(isManual = false) {
   document.getElementById('errorBox').style.display = 'none';
 
   try {
+    // Lấy 500 nến để warmup EMA đủ chính xác (giống TradingView)
     const res = await fetch(
-      'https://corsproxy.io/?https://api.mexc.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=200'
+      'https://corsproxy.io/?https://api.mexc.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=500'
     );
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const raw = await res.json();
 
-    const candles = raw.map(r => ({
+    const allCandles = raw.map(r => ({
       time: +r[0], open: +r[1], high: +r[2], low: +r[3], close: +r[4], volume: +r[5],
     }));
 
-    const closes = candles.map(c => c.close);
-    const ema21 = calcEMA(closes, 21);
-    const ema89 = calcEMA(closes, 89);
+    // Bỏ candle cuối chưa đóng — tính EMA trên closed candles
+    const closedCandles = allCandles.slice(0, -1);
+    const closes = closedCandles.map(c => c.close);
+    const ema21Full = calcEMA(closes, 21);
+    const ema89Full = calcEMA(closes, 89);
+
+    // Chỉ hiển thị 200 nến cuối
+    const candles = closedCandles.slice(-200);
+    const ema21 = ema21Full.slice(-200);
+    const ema89 = ema89Full.slice(-200);
 
     const last = candles[candles.length - 1];
     const prev = candles[candles.length - 2];
@@ -669,7 +677,7 @@ async function fetchAndAnalyze(isManual = false) {
       document.getElementById('statCrossTime').textContent = 'trong 200 nến';
     }
 
-    document.getElementById('statCandles').textContent = candles.length;
+    document.getElementById('statCandles').textContent = candles.length + ' / 500';
     document.getElementById('statsGrid').style.display = 'grid';
 
     // Chart
