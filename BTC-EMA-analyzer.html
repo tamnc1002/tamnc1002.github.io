@@ -125,7 +125,7 @@
 </div>
 
 <div class="stats-grid" id="statsGrid" style="display:none">
-  <div class="stat-card"><div class="label">Price hiện tại</div><div class="value" id="statPrice">—</div><div class="sub" id="statChange">—</div></div>
+  <div class="stat-card"><div class="label">Price hiện tại · live</div><div class="value" id="statPrice">—</div><div class="sub" id="statChange">cập nhật mỗi 5s</div></div>
   <div class="stat-card"><div class="label">EMA 89 (chính)</div><div class="value ema89c" id="statEma89">—</div><div class="sub" id="statDiff89">—</div></div>
   <div class="stat-card"><div class="label">EMA 21</div><div class="value ema21c" id="statEma21">—</div><div class="sub" id="statDiff21">—</div></div>
   <div class="stat-card"><div class="label">EMA Spread (21-89)</div><div class="value" id="statSpread">—</div><div class="sub" id="statSpreadPct">—</div></div>
@@ -415,6 +415,37 @@ function drawChart(candles, ema21, ema89, signals) {
   }
 }
 
+// ─── Live Price (mỗi 5s) ──────────────────────────────────────────
+let lastLivePrice = null;
+async function fetchLivePrice() {
+  try {
+    const res = await fetch('https://corsproxy.io/?https://api.mexc.com/api/v3/ticker/price?symbol=BTCUSDT');
+    if (!res.ok) return;
+    const data = await res.json();
+    const price = parseFloat(data.price);
+    if (!price) return;
+
+    const priceEl  = document.getElementById('statPrice');
+    const changeEl = document.getElementById('statChange');
+    if (!priceEl) return;
+
+    priceEl.textContent = '$' + fmt(price, 2);
+
+    if (lastLivePrice !== null) {
+      const diff = price - lastLivePrice;
+      const pct  = (diff / lastLivePrice) * 100;
+      changeEl.textContent = (diff >= 0 ? '+' : '') + fmt(diff, 2) + ' (' + (pct >= 0 ? '+' : '') + fmt(pct, 3) + '%)';
+      changeEl.style.color = diff >= 0 ? 'var(--bull)' : 'var(--bear)';
+    }
+    lastLivePrice = price;
+  } catch(e) {}
+}
+
+function startLivePrice() {
+  fetchLivePrice();
+  setInterval(fetchLivePrice, 5000);
+}
+
 // ─── Fetch & Render ────────────────────────────────────────────────
 let isFetching = false;
 let lastSignalTime = null;
@@ -612,6 +643,7 @@ window.touchedEMA = touchedEMA;
 
 fetchAndAnalyze(true);
 startCountdown();
+startLivePrice();
 </script>
 </body>
 </html>
