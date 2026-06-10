@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTC EMA Analyzer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Space+Grotesk:wght@300;400;600&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: #1e1e2e;
+    --text: #e2e2f0;
+    --muted: #565670;
+    --accent: #7c6af7;
+    --bull: #22d3a0;
+    --bear: #f7456a;
+    --ema21: #f7c948;
+    --ema89: #7c6af7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .title-group h1 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #fff;
+  }
+
+  .title-group p {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2px;
+  }
+
+  .btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn:hover { opacity: 0.85; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-spin {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Signal banner */
+  .signal-banner {
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid transparent;
+    transition: all 0.4s ease;
+  }
+
+  .signal-banner.bull {
+    background: rgba(34, 211, 160, 0.08);
+    border-color: rgba(34, 211, 160, 0.25);
+  }
+
+  .signal-banner.bear {
+    background: rgba(247, 69, 106, 0.08);
+    border-color: rgba(247, 69, 106, 0.25);
+  }
+
+  .signal-banner.neutral {
+    background: rgba(124, 106, 247, 0.08);
+    border-color: rgba(124, 106, 247, 0.2);
+  }
+
+  .signal-dot {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .bull .signal-dot { background: rgba(34, 211, 160, 0.15); }
+  .bear .signal-dot { background: rgba(247, 69, 106, 0.15); }
+  .neutral .signal-dot { background: rgba(124, 106, 247, 0.15); }
+
+  .signal-info h2 {
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .bull .signal-info h2 { color: var(--bull); }
+  .bear .signal-info h2 { color: var(--bear); }
+  .neutral .signal-info h2 { color: var(--accent); }
+
+  .signal-info p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  /* Stats grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .stat-card .label {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  .stat-card .value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .stat-card .value.ema21 { color: var(--ema21); }
+  .stat-card .value.ema89 { color: var(--ema89); }
+  .stat-card .value.bull { color: var(--bull); }
+  .stat-card .value.bear { color: var(--bear); }
+
+  .stat-card .sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Chart canvas */
+  .chart-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .chart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chart-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 20px; height: 2px;
+    border-radius: 2px;
+  }
+
+  canvas { width: 100% !important; }
+
+  /* Candles table */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .table-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  thead th {
+    padding: 10px 16px;
+    text-align: right;
+    color: var(--muted);
+    font-weight: 400;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  thead th:first-child { text-align: left; }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(30,30,46,0.6);
+    transition: background 0.15s;
+  }
+
+  tbody tr:hover { background: rgba(124,106,247,0.05); }
+  tbody tr:last-child { border-bottom: none; }
+
+  tbody td {
+    padding: 9px 16px;
+    text-align: right;
+    color: var(--text);
+  }
+
+  tbody td:first-child { text-align: left; color: var(--muted); }
+
+  .cross-up { background: rgba(34,211,160,0.08); }
+  .cross-down { background: rgba(247,69,106,0.08); }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .tag.up { background: rgba(34,211,160,0.15); color: var(--bull); }
+  .tag.down { background: rgba(247,69,106,0.15); color: var(--bear); }
+  .tag.golden { background: rgba(247,201,72,0.15); color: var(--ema21); }
+
+  /* Timestamp */
+  .timestamp {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+
+  .empty-state .icon { font-size: 36px; margin-bottom: 12px; }
+
+  /* Error */
+  .error-box {
+    background: rgba(247,69,106,0.08);
+    border: 1px solid rgba(247,69,106,0.25);
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--bear);
+    margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-group">
+    <h1>BTC/USDT — EMA Analyzer</h1>
+    <p>MEXC API · 15m · EMA 21 &amp; 89</p>
+  </div>
+  <button class="btn" id="fetchBtn" onclick="fetchAndAnalyze()">
+    <span id="btnIcon">⟳</span>
+    <span id="btnText">Fetch Data</span>
+  </button>
+</header>
+
+<div id="errorBox" class="error-box" style="display:none"></div>
+
+<div id="signalBanner" class="signal-banner neutral" style="display:none">
+  <div class="signal-dot" id="signalDot">⚡</div>
+  <div class="signal-info">
+    <h2 id="signalTitle">—</h2>
+    <p id="signalDesc">—</p>
+  </div>
+</div>
+
+<div class="stats-grid" id="statsGrid" style="display:none">
+  <div class="stat-card">
+    <div class="label">Price hiện tại</div>
+    <div class="value" id="statPrice">—</div>
+    <div class="sub" id="statChange">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">EMA 21</div>
+    <div class="value ema21" id="statEma21">—</div>
+    <div class="sub" id="statDiff21">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">EMA 89</div>
+    <div class="value ema89" id="statEma89">—</div>
+    <div class="sub" id="statDiff89">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">EMA Spread</div>
+    <div class="value" id="statSpread">—</div>
+    <div class="sub" id="statSpreadPct">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Crossover gần nhất</div>
+    <div class="value" id="statCross">—</div>
+    <div class="sub" id="statCrossTime">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Candles loaded</div>
+    <div class="value" id="statCandles">—</div>
+    <div class="sub">200 nến · 15m</div>
+  </div>
+</div>
+
+<div class="chart-wrap" id="chartWrap" style="display:none">
+  <div class="chart-header">
+    <span class="chart-title">Price + EMA Lines (last 60 candles)</span>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--ema21)"></div> EMA 21</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--ema89)"></div> EMA 89</div>
+    </div>
+  </div>
+  <canvas id="priceChart" height="260"></canvas>
+</div>
+
+<div class="table-wrap" id="tableWrap" style="display:none">
+  <div class="table-header">20 Candles gần nhất</div>
+  <div style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>Thời gian</th>
+          <th>Open</th>
+          <th>High</th>
+          <th>Low</th>
+          <th>Close</th>
+          <th>EMA 21</th>
+          <th>EMA 89</th>
+          <th>Signal</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="emptyState" class="empty-state">
+  <div class="icon">📊</div>
+  Nhấn <strong>Fetch Data</strong> để load nến BTC/USDT 15m từ MEXC
+</div>
+
+<div class="timestamp" id="timestamp"></div>
+
+<script>
+// ─── EMA Calculation ───────────────────────────────────────────────
+function calcEMA(closes, period) {
+  const k = 2 / (period + 1);
+  const result = new Array(closes.length).fill(null);
+  // seed với SMA
+  let sum = 0;
+  for (let i = 0; i < period; i++) sum += closes[i];
+  result[period - 1] = sum / period;
+  for (let i = period; i < closes.length; i++) {
+    result[i] = closes[i] * k + result[i - 1] * (1 - k);
+  }
+  return result;
+}
+
+function fmt(n, dec = 2) {
+  if (n === null || n === undefined) return '—';
+  return Number(n).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+}
+
+function fmtTime(ts) {
+  const d = new Date(ts);
+  return d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) +
+    ' ' + d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+}
+
+// ─── Chart Drawing ─────────────────────────────────────────────────
+function drawChart(candles, ema21, ema89) {
+  const canvas = document.getElementById('priceChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.parentElement.clientWidth - 40;
+  const H = 260;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
+
+  // use last 60 candles
+  const n = Math.min(60, candles.length);
+  const start = candles.length - n;
+  const slice = candles.slice(start);
+  const e21 = ema21.slice(start);
+  const e89 = ema89.slice(start);
+
+  const allVals = [
+    ...slice.map(c => c.high),
+    ...slice.map(c => c.low),
+    ...e21.filter(v => v !== null),
+    ...e89.filter(v => v !== null),
+  ];
+  const minV = Math.min(...allVals) * 0.9995;
+  const maxV = Math.max(...allVals) * 1.0005;
+
+  const padL = 72, padR = 12, padT = 16, padB = 28;
+  const cW = W - padL - padR;
+  const cH = H - padT - padB;
+
+  const xOf = i => padL + (i / (n - 1)) * cW;
+  const yOf = v => padT + cH - ((v - minV) / (maxV - minV)) * cH;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // grid lines
+  ctx.strokeStyle = '#1e1e2e';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = padT + (cH / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(W - padR, y);
+    ctx.stroke();
+    const val = maxV - ((maxV - minV) / 4) * i;
+    ctx.fillStyle = '#565670';
+    ctx.font = '10px JetBrains Mono, monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(fmt(val, 0), padL - 6, y + 4);
+  }
+
+  // candles
+  const cw = Math.max(2, cW / n * 0.6);
+  slice.forEach((c, i) => {
+    const x = xOf(i);
+    const bull = c.close >= c.open;
+    ctx.strokeStyle = bull ? '#22d3a0' : '#f7456a';
+    ctx.fillStyle = bull ? 'rgba(34,211,160,0.7)' : 'rgba(247,69,106,0.7)';
+    ctx.lineWidth = 1;
+
+    // wick
+    ctx.beginPath();
+    ctx.moveTo(x, yOf(c.high));
+    ctx.lineTo(x, yOf(c.low));
+    ctx.stroke();
+
+    // body
+    const yO = yOf(c.open), yC = yOf(c.close);
+    const bodyY = Math.min(yO, yC);
+    const bodyH = Math.max(1, Math.abs(yO - yC));
+    ctx.fillRect(x - cw / 2, bodyY, cw, bodyH);
+  });
+
+  // EMA lines
+  const drawLine = (data, color) => {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    let started = false;
+    data.forEach((v, i) => {
+      if (v === null) return;
+      if (!started) { ctx.moveTo(xOf(i), yOf(v)); started = true; }
+      else ctx.lineTo(xOf(i), yOf(v));
+    });
+    ctx.stroke();
+  };
+
+  drawLine(e89, '#7c6af7');
+  drawLine(e21, '#f7c948');
+
+  // time labels (every 10 candles)
+  ctx.fillStyle = '#565670';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  for (let i = 0; i < n; i += 10) {
+    const d = new Date(slice[i].time);
+    const label = d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+    ctx.fillText(label, xOf(i), H - 8);
+  }
+}
+
+// ─── Main Fetch & Analyze ──────────────────────────────────────────
+async function fetchAndAnalyze() {
+  const btn = document.getElementById('fetchBtn');
+  const btnIcon = document.getElementById('btnIcon');
+  const btnText = document.getElementById('btnText');
+
+  btn.disabled = true;
+  btnIcon.className = 'btn-spin';
+  btnText.textContent = 'Loading...';
+
+  document.getElementById('errorBox').style.display = 'none';
+
+  try {
+    const res = await fetch(
+      'https://api.mexc.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=200'
+    );
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const raw = await res.json();
+
+    // MEXC format: [openTime, open, high, low, close, volume, closeTime, ...]
+    const candles = raw.map(r => ({
+      time:   +r[0],
+      open:   +r[1],
+      high:   +r[2],
+      low:    +r[3],
+      close:  +r[4],
+      volume: +r[5],
+    }));
+
+    const closes = candles.map(c => c.close);
+    const ema21 = calcEMA(closes, 21);
+    const ema89 = calcEMA(closes, 89);
+
+    const last = candles[candles.length - 1];
+    const prev = candles[candles.length - 2];
+    const e21Last = ema21[ema21.length - 1];
+    const e89Last = ema89[ema89.length - 1];
+    const e21Prev = ema21[ema21.length - 2];
+    const e89Prev = ema89[ema89.length - 2];
+
+    // detect crossover
+    let crossIdx = -1, crossType = null;
+    for (let i = candles.length - 1; i >= 1; i--) {
+      const cur21 = ema21[i], cur89 = ema89[i];
+      const p21 = ema21[i-1], p89 = ema89[i-1];
+      if (cur21 === null || cur89 === null || p21 === null || p89 === null) continue;
+      if (p21 <= p89 && cur21 > cur89) { crossIdx = i; crossType = 'golden'; break; }
+      if (p21 >= p89 && cur21 < cur89) { crossIdx = i; crossType = 'death'; break; }
+    }
+
+    // signal
+    const isAbove = e21Last > e89Last;
+    const isBull = last.close > e21Last && isAbove;
+    const isBear = last.close < e21Last && !isAbove;
+    const justCrossed = crossIdx === candles.length - 1 || crossIdx === candles.length - 2;
+
+    // ─── Signal Banner ─────────────────────────────────────────────
+    const banner = document.getElementById('signalBanner');
+    const dot = document.getElementById('signalDot');
+    const title = document.getElementById('signalTitle');
+    const desc = document.getElementById('signalDesc');
+    banner.style.display = 'flex';
+
+    if (crossType === 'golden' && justCrossed) {
+      banner.className = 'signal-banner bull';
+      dot.textContent = '🌟';
+      title.textContent = 'GOLDEN CROSS';
+      desc.textContent = 'EMA 21 vừa cắt lên EMA 89 — tín hiệu tăng mạnh';
+    } else if (crossType === 'death' && justCrossed) {
+      banner.className = 'signal-banner bear';
+      dot.textContent = '💀';
+      title.textContent = 'DEATH CROSS';
+      desc.textContent = 'EMA 21 vừa cắt xuống EMA 89 — tín hiệu giảm';
+    } else if (isBull) {
+      banner.className = 'signal-banner bull';
+      dot.textContent = '📈';
+      title.textContent = 'BULLISH TREND';
+      desc.textContent = 'Giá trên EMA 21, EMA 21 trên EMA 89 — xu hướng tăng';
+    } else if (isBear) {
+      banner.className = 'signal-banner bear';
+      dot.textContent = '📉';
+      title.textContent = 'BEARISH TREND';
+      desc.textContent = 'Giá dưới EMA 21, EMA 21 dưới EMA 89 — xu hướng giảm';
+    } else {
+      banner.className = 'signal-banner neutral';
+      dot.textContent = '⚡';
+      title.textContent = 'SIDEWAYS / MIXED';
+      desc.textContent = 'Tín hiệu chưa rõ ràng — chờ xác nhận';
+    }
+
+    // ─── Stats ─────────────────────────────────────────────────────
+    const pctChange = (last.close - prev.close) / prev.close * 100;
+    const diff21 = (last.close - e21Last) / e21Last * 100;
+    const diff89 = (last.close - e89Last) / e89Last * 100;
+    const spread = e21Last - e89Last;
+    const spreadPct = spread / e89Last * 100;
+
+    document.getElementById('statPrice').textContent = '$' + fmt(last.close, 2);
+    document.getElementById('statChange').textContent = (pctChange >= 0 ? '+' : '') + fmt(pctChange, 3) + '% vs candle trước';
+    document.getElementById('statChange').style.color = pctChange >= 0 ? 'var(--bull)' : 'var(--bear)';
+
+    document.getElementById('statEma21').textContent = '$' + fmt(e21Last, 2);
+    document.getElementById('statDiff21').textContent = 'Giá ' + (diff21 >= 0 ? '+' : '') + fmt(diff21, 3) + '% vs EMA21';
+
+    document.getElementById('statEma89').textContent = '$' + fmt(e89Last, 2);
+    document.getElementById('statDiff89').textContent = 'Giá ' + (diff89 >= 0 ? '+' : '') + fmt(diff89, 3) + '% vs EMA89';
+
+    const spreadEl = document.getElementById('statSpread');
+    spreadEl.textContent = '$' + fmt(Math.abs(spread), 2);
+    spreadEl.className = 'value ' + (spread >= 0 ? 'bull' : 'bear');
+    document.getElementById('statSpreadPct').textContent = 'EMA21 ' + (spread >= 0 ? 'trên' : 'dưới') + ' EMA89 ' + fmt(Math.abs(spreadPct), 3) + '%';
+
+    if (crossIdx >= 0) {
+      document.getElementById('statCross').textContent = crossType === 'golden' ? '🌟 Golden' : '💀 Death';
+      document.getElementById('statCrossTime').textContent = fmtTime(candles[crossIdx].time);
+    } else {
+      document.getElementById('statCross').textContent = 'Chưa có';
+    }
+
+    document.getElementById('statCandles').textContent = candles.length;
+
+    document.getElementById('statsGrid').style.display = 'grid';
+
+    // ─── Chart ─────────────────────────────────────────────────────
+    document.getElementById('chartWrap').style.display = 'block';
+    setTimeout(() => drawChart(candles, ema21, ema89), 50);
+
+    // ─── Table (last 20) ───────────────────────────────────────────
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+    const last20start = candles.length - 20;
+
+    for (let i = candles.length - 1; i >= last20start; i--) {
+      const c = candles[i];
+      const e21 = ema21[i], e89 = ema89[i];
+      const e21p = ema21[i-1], e89p = ema89[i-1];
+
+      let signal = '', rowClass = '';
+      if (e21 !== null && e89 !== null && e21p !== null && e89p !== null) {
+        if (e21p <= e89p && e21 > e89) {
+          signal = '<span class="tag golden">⭐ Golden Cross</span>';
+          rowClass = 'cross-up';
+        } else if (e21p >= e89p && e21 < e89) {
+          signal = '<span class="tag down">💀 Death Cross</span>';
+          rowClass = 'cross-down';
+        } else if (c.close > e21) {
+          signal = '<span class="tag up">▲ Above EMA21</span>';
+        } else {
+          signal = '<span class="tag down">▼ Below EMA21</span>';
+        }
+      }
+
+      const bullCandle = c.close >= c.open;
+      const closeColor = bullCandle ? 'var(--bull)' : 'var(--bear)';
+
+      tbody.innerHTML += `
+        <tr class="${rowClass}">
+          <td>${fmtTime(c.time)}</td>
+          <td>${fmt(c.open, 2)}</td>
+          <td style="color:var(--bull)">${fmt(c.high, 2)}</td>
+          <td style="color:var(--bear)">${fmt(c.low, 2)}</td>
+          <td style="color:${closeColor};font-weight:600">${fmt(c.close, 2)}</td>
+          <td style="color:var(--ema21)">${e21 !== null ? fmt(e21, 2) : '—'}</td>
+          <td style="color:var(--ema89)">${e89 !== null ? fmt(e89, 2) : '—'}</td>
+          <td>${signal}</td>
+        </tr>`;
+    }
+
+    document.getElementById('tableWrap').style.display = 'block';
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('timestamp').textContent =
+      'Last updated: ' + new Date().toLocaleString('vi-VN');
+
+  } catch (err) {
+    const box = document.getElementById('errorBox');
+    box.style.display = 'block';
+    box.textContent = '❌ Lỗi: ' + err.message + ' — Kiểm tra kết nối hoặc CORS (chạy trên localhost/server)';
+  } finally {
+    btn.disabled = false;
+    btnIcon.className = '';
+    btnIcon.textContent = '⟳';
+    btnText.textContent = 'Refresh';
+  }
+}
+
+window.addEventListener('resize', () => {
+  const wrap = document.getElementById('chartWrap');
+  if (wrap.style.display !== 'none') {
+    // re-draw handled externally if needed
+  }
+});
+</script>
+</body>
+</html>
